@@ -1,0 +1,16 @@
+h1 {
+    text-align: center;
+    font-style: italic;
+    color:color(from blue srgb r g b);
+}
+
+.Homepage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#CloseAll{
+    display: flex;
+}

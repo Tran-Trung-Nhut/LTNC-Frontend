@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import "./App.css";
-import DriverList from "./components/DriverList";
+import Home from "./components/Home";
 
 class App extends Component {
     render() {
         return (
             <div className="App">
-                <DriverList /> {}
+                <Home/> ()
             </div>
         );
     }
