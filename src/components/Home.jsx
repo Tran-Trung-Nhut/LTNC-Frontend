@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import "./Home.css";
 import DriverList from "./DriverList";
 import VehicleList from "./Vehicle";
+import FooterPage from "./FooterPage"
 
 function Home() {
 
@@ -26,6 +27,7 @@ function Home() {
     }
     return (
         <div className="Homepage">
+            <FooterPage/>
             <h1>Welcome to Transportation Website</h1>
             <button type="button" onClick={CancelClick}>X</button>
 
