@@ -107,7 +107,7 @@ class DriverList extends React.Component {
                 this.setState({
                     editedDriverId: null
                 });
-                this.fetchDrivers(); // Fetch drivers again to get updated data
+                this.fetchDrivers(); 
             })
             .catch(error => {
                 console.error("Error updating driver:", error);

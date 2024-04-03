@@ -14,3 +14,7 @@ h1 {
 #CloseAll{
     display: flex;
 }
+
+.btn.btn-success.active{
+    background-color: lightgreen;
+}
