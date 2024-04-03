@@ -88,6 +88,7 @@ class DriverList extends React.Component {
             editedDriverId: driverId,
             editedDriver: this.state.drivers.find(driver => driver.id === driverId)
         });
+        
     }
 
     handleChange = (event) => {
@@ -114,7 +115,7 @@ class DriverList extends React.Component {
                 alert("Failed to update driver. Please try again later.");
             });
     }
-    deleteDriver = (id) => {
+    deleteDriver = (id) => { 
         const isConfirmed = window.confirm("Are you sure to delete this driver?");
         if(isConfirmed){
             axios.delete(`http://localhost:8000/Driver/delete/${id}`)
@@ -127,6 +128,7 @@ class DriverList extends React.Component {
                     console.log("Error deleting driver:", error);
                 });
         }
+        
     }
     
     toggleAddDriverForm = () => {
@@ -137,6 +139,7 @@ class DriverList extends React.Component {
 
     render() {
         const { DataisLoaded, drivers, editedDriverId,editedDriver } = this.state;
+        const userRole = localStorage.getItem('userRole');
         if (!DataisLoaded)
             return (
                 <div>
@@ -148,7 +151,9 @@ class DriverList extends React.Component {
             <div className="App">
                 <h1 className="Driver" >List of Driver</h1>
                 <div className="container">
-                <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
+                {userRole === 'admin' && (
+                    <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
+                )}
                 {this.state.isAddingDriver && (
                     <div>
                         <input type="text" id="Name" className="form-control" placeholder="Name" />
@@ -174,7 +179,7 @@ class DriverList extends React.Component {
                         <th scope="col">Phone Number</th>  
                         <th scope="col">License</th>  
                         <th scope="col">Status</th>  
-                        <th scope="col">Option</th>
+                        {userRole === 'admin' && (<th scope="col">Option</th>)}
                         </tr>
                     </thead>
                     {drivers?.map((driver,index) => (
@@ -220,14 +225,15 @@ class DriverList extends React.Component {
                                 <input type="text" name="availability" value={editedDriver.availability} onChange={this.handleChange} />
                                 : driver.availability}
                         </td>
-                        <td>
+                        {userRole === 'admin' && (<td>
                             {editedDriverId === driver.id ?
                                 <button type="button" className="btn btn-success" onClick={() => this.saveEditedDriver(driver.id)}>Save</button>
                                 :
                                 <button type="button" className="btn btn-warning" onClick={() => this.editDriver(driver.id)}>Edit</button>
                             }
                             <button type="button" className="btn btn-danger mx-2" onClick={() => this.deleteDriver(driver.id)}>Delete</button>
-                        </td>
+                            
+                        </td>)}
                     </tr>  
                                
                     ))}

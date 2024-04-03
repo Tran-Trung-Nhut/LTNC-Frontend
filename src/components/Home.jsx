@@ -9,9 +9,11 @@ function Home() {
     const [isLoginnedIn, setIsLoginnedIn] = useState(false);
     const [userRole, setUserRole] = useState('');
 
-    const handleLogin = (role) => {
+    const handleLogin = (role, id_number) => {
         setIsLoginnedIn(true);
         setUserRole(role);
+        localStorage.setItem('userRole',role);
+        localStorage.setItem('id_number', id_number);
     }
     
     const [showDriverList, setShowDriverList] = useState(false);

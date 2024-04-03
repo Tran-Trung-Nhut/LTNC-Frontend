@@ -116,9 +116,14 @@ class VehicleList extends React.Component {
     }
     
     toggleAddVehicleForm = () => {
-        this.setState(prevState => ({
-            isAddingVehicle: !prevState.isAddingVehicle
-        }));
+        const userRole = localStorage.getItem('userRole');
+        if(userRole === 'admin'){
+            this.setState(prevState => ({
+                isAddingVehicle: !prevState.isAddingVehicle
+            }));
+        }else{
+            alert("You don't have permisson to do that!")
+        }
     }
 
     render() {

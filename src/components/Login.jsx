@@ -13,13 +13,13 @@ function Login({handleLogin}){
             .then(res => {
                 const driver = res.data;
                 if(password === 'admin' && username === 'admin'){
-                    handleLogin('admin');
+                    handleLogin('admin',password);
                 }else{
                     if(!driver){
                         alert('Invalid username or password');
                     }else{
                         if(username === driver.name){
-                            handleLogin('user');
+                            handleLogin('user', password);
                         }else{
                             alert('Invalid username or password');  
                         }
