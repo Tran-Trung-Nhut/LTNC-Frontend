@@ -18,7 +18,7 @@ function Login({handleLogin}){
                     if(!driver){
                         alert('Invalid username or password');
                     }else{
-                        if(password === driver.id_number){
+                        if(username === driver.name){
                             handleLogin('user');
                         }else{
                             alert('Invalid username or password');  
