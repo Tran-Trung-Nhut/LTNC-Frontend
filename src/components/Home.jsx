@@ -14,13 +14,15 @@ function Home() {
     }
 
     const VehicleClick = () =>{
-        setShowVehicleList(true);
+        if(!showVehicleList) setShowVehicleList(true);
+        else setShowVehicleList(false);
         setShowDriverList(false);
     }
 
     const DriverClick = () =>{
         setShowVehicleList(false);
-        setShowDriverList(true);
+        if(!showDriverList) setShowDriverList(true);
+        else setShowDriverList(false);
     }
     return (
         <div className="Homepage">

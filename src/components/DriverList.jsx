@@ -28,15 +28,29 @@ class DriverList extends React.Component {
     }
     saveNewDriver = () => {
         // Lấy thông tin từ các input
-        const name = document.getElementById("newDriverName").value;
-        const personal_ID = document.getElementById("newDriverPersonalID").value;
-        const sex = document.getElementById("newDriverSex").value;
+        const name = document.getElementById("Name").value;
+        const id_number = document.getElementById("id_Number").value;
+        const dob = document.getElementById("DateofBirth").value;
+        const gender = document.getElementById("Gender").value;
+        const phone_number = document.getElementById("PhoneNumber").value;
+        const licenseGrade = document.getElementById("LicenseGrade").value;
+        const licenseNumber = document.getElementById("LicenseNumber").value;
+        const availability = document.getElementById("Availability").value;
+
+        const license = {
+            grade: licenseGrade,
+            number: licenseNumber
+        } 
     
         // Tạo object chứa thông tin của driver mới
         const newDriver = {
             name: name,
-            personal_ID: personal_ID,
-            sex: sex
+            id_number: id_number,
+            dob: dob,
+            gender: gender,
+            phone_number: phone_number,
+            license: license,
+            availability: availability
         };
     
         // Gửi object chứa thông tin của driver mới lên server để lưu
@@ -137,9 +151,14 @@ class DriverList extends React.Component {
                 <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
                 {this.state.isAddingDriver && (
                     <div>
-                        <input type="text" id="newDriverName" className="form-control" placeholder="Name" />
-                        <input type="text" id="newDriverPersonalID" className="form-control" placeholder="Personal ID" />
-                        <input type="text" id="newDriverSex" className="form-control" placeholder="Gender" />
+                        <input type="text" id="Name" className="form-control" placeholder="Name" />
+                        <input type="text" id="id_Number" className="form-control" placeholder="ID number" />
+                        <input type="text" id="DateofBirth" className="form-control" placeholder="Date of Birth" />
+                        <input type="text" id="Gender" className="form-control" placeholder="Gender" />
+                        <input type="text" id="PhoneNumber" className="form-control" placeholder="Phone number" />
+                        <input type="text" id="LicenseGrade" className="form-control" placeholder="License grade" />
+                        <input type="text" id="LicenseNumber" className="form-control" placeholder="License number" />
+                        <input type="text" id="Availability" className="form-control" placeholder="Status" />
                         <button type="button" className="btn btn-success" onClick={this.saveNewDriver}>Save</button>
                         <button type="button" className="btn btn-secondary" onClick={this.cancelAddDriver}>Cancel</button>
                     </div>
@@ -149,8 +168,12 @@ class DriverList extends React.Component {
                         <tr>
                         <th scope="col">Ordinal number</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Personal ID</th>
+                        <th scope="col">ID number</th>
+                        <th scope="col">Date of Birth</th>  
                         <th scope="col">Gender</th>  
+                        <th scope="col">Phone Number</th>  
+                        <th scope="col">License</th>  
+                        <th scope="col">Status</th>  
                         <th scope="col">Option</th>
                         </tr>
                     </thead>
@@ -166,13 +189,36 @@ class DriverList extends React.Component {
                         </td>
                         <td>
                             {editedDriverId === driver.id ?
-                                <input type="text" name="personal_ID" value={editedDriver.personal_ID} onChange={this.handleChange} />
-                                : driver.personal_ID}
+                                <input type="text" name="id_number" value={editedDriver.id_number} onChange={this.handleChange} />
+                                : driver.id_number}
                         </td>
                         <td>
                             {editedDriverId === driver.id ?
-                                <input type="text" name="sex" value={editedDriver.sex} onChange={this.handleChange} />
-                                : driver.sex}
+                                <input type="text" name="dob" value={editedDriver.dob} onChange={this.handleChange} />
+                                : driver.dob}
+                        </td>
+                        <td>
+                            {editedDriverId === driver.id ?
+                                <input type="text" name="gender" value={editedDriver.gender} onChange={this.handleChange} />
+                                : driver.gender}
+                        </td>
+                        <td>
+                            {editedDriverId === driver.id ?
+                                <input type="text" name="phone_number" value={editedDriver.phone_number} onChange={this.handleChange} />
+                                : driver.phone_number}
+                        </td>
+                        <td>
+                            {editedDriverId === driver.id ?
+                            <div>
+                                <input type="text" name="license" value={editedDriver.license.grade} onChange={this.handleChange} />
+                                <input type="text" name="license" value={editedDriver.license.number} onChange={this.handleChange} />
+                            </div>
+                                : `${driver.license.grade} - ${driver.license.number}`}
+                        </td>
+                        <td>
+                            {editedDriverId === driver.id ?
+                                <input type="text" name="availability" value={editedDriver.availability} onChange={this.handleChange} />
+                                : driver.availability}
                         </td>
                         <td>
                             {editedDriverId === driver.id ?
