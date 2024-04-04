@@ -101,6 +101,10 @@ class DriverList extends React.Component {
         }));
     }
 
+    showDrivingHistory = () => {
+        
+    }
+
     saveEditedDriver = (driverId) => {
         const { editedDriver } = this.state;
         axios.put(`http://localhost:8000/Driver/update`, editedDriver)
@@ -179,7 +183,7 @@ class DriverList extends React.Component {
                         <th scope="col">Phone Number</th>  
                         <th scope="col">License</th>  
                         <th scope="col">Status</th>  
-                        {userRole === 'admin' && (<th scope="col">Option</th>)}
+                        <th scope="col">Option</th>
                         </tr>
                     </thead>
                     {drivers?.map((driver,index) => (
@@ -225,15 +229,17 @@ class DriverList extends React.Component {
                                 <input type="text" name="availability" value={editedDriver.availability} onChange={this.handleChange} />
                                 : driver.availability}
                         </td>
-                        {userRole === 'admin' && (<td>
-                            {editedDriverId === driver.id ?
-                                <button type="button" className="btn btn-success" onClick={() => this.saveEditedDriver(driver.id)}>Save</button>
-                                :
-                                <button type="button" className="btn btn-warning" onClick={() => this.editDriver(driver.id)}>Edit</button>
-                            }
-                            <button type="button" className="btn btn-danger mx-2" onClick={() => this.deleteDriver(driver.id)}>Delete</button>
-                            
-                        </td>)}
+                        <td>
+                            {editedDriverId === driver.id ? (
+                                    <button type="button" className="btn btn-success" onClick={() => this.saveEditedDriver(driver.id)}>Save</button>
+                                ) : (
+                                    userRole === 'admin' && (
+                                        <button type="button" className="btn btn-warning" onClick={() => this.editDriver(driver.id)}>Edit</button>
+                                    )
+                                )}
+                                {userRole === 'admin' && (<button type="button" className="btn btn-danger mx-2" onClick={() => this.deleteDriver(driver.id)}>Delete</button>)}
+                                <button type="button" className="" onClick={() => this.showDrivingHistory}>Driving history</button>
+                        </td>
                     </tr>  
                                
                     ))}
