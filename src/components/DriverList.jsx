@@ -93,12 +93,26 @@ class DriverList extends React.Component {
 
     handleChange = (event) => {
         const { name, value } = event.target;
-        this.setState(prevState => ({
-            editedDriver: {
-                ...prevState.editedDriver,
-                [name]: value
-            }
-        }));
+        const [fieldName, subFieldName] = name.split('.');
+    
+        if (fieldName === 'license') {
+            this.setState(prevState => ({
+                editedDriver: {
+                    ...prevState.editedDriver,
+                    license: {
+                        ...prevState.editedDriver.license,
+                        [subFieldName]: value
+                    }
+                }
+            }));
+        } else {
+            this.setState(prevState => ({
+                editedDriver: {
+                    ...prevState.editedDriver,
+                    [name]: value
+                }
+            }));
+        }
     }
 
     showDrivingHistory = () => {
@@ -111,7 +125,7 @@ class DriverList extends React.Component {
             .then(() => {
                 this.setState({
                     editedDriverId: null,
-                });
+                 });
                 this.fetchDrivers(); 
             })
             .catch(error => {
@@ -219,12 +233,14 @@ class DriverList extends React.Component {
                                 : driver.phone_number}
                         </td>
                         <td>
-                            {editedDriverId === driver.id ?
+                            {editedDriverId === driver.id ?(
                             <div>
-                                <input type="text" name="license" value={editedDriver.license.grade} onChange={this.handleChange} />
-                                <input type="text" name="license" value={editedDriver.license.number} onChange={this.handleChange} />
+                                <input type="text" name="license.grade" value={editedDriver.license.grade} onChange={this.handleChange} />
+                                <input type="text" name="license.number" value={editedDriver.license.number} onChange={this.handleChange} />
                             </div>
-                                : `${driver.license.grade} - ${driver.license.number}`}
+                            ):(
+                                `${driver.license.grade} - ${driver.license.number}`
+                            )}
                         </td>
                         <td>
                             {editedDriverId === driver.id ?
