@@ -2,16 +2,17 @@ import React, {useState} from "react";
 import "./Home.css";
 import DriverList from "./DriverList";
 import VehicleList from "./Vehicle";
-import FooterPage from "./FooterPage"
 import Login from "./Login"
+import Footer from "./Footer";
+import Header from "./Header";
 
 function Home() {
     const [isLoginnedIn, setIsLoginnedIn] = useState(false);
-    const [userRole, setUserRole] = useState('');
+    // const [userRole, setUserRole] = useState('');
 
     const handleLogin = (role, id_number) => {
         setIsLoginnedIn(true);
-        setUserRole(role);
+        // setUserRole(role);
         localStorage.setItem('userRole',role);
         localStorage.setItem('id_number', id_number);
     }
@@ -32,7 +33,7 @@ function Home() {
     }
     return (
         <div className="Homepage">
-        <FooterPage/>
+        <Header/>
         {!isLoginnedIn ? (
             <Login handleLogin={handleLogin} />
         ) : (
@@ -62,6 +63,7 @@ function Home() {
             {showVehicleList && <VehicleList/>}
             </>
         )}
+        <Footer className="Footer"/>
         </div>
     );
 }

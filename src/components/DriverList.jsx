@@ -110,7 +110,7 @@ class DriverList extends React.Component {
         axios.put(`http://localhost:8000/Driver/update`, editedDriver)
             .then(() => {
                 this.setState({
-                    editedDriverId: null
+                    editedDriverId: null,
                 });
                 this.fetchDrivers(); 
             })
@@ -147,7 +147,7 @@ class DriverList extends React.Component {
         if (!DataisLoaded)
             return (
                 <div>
-                    <h1></h1>
+                    <h1>Wait..</h1>
                 </div>
             );
  
@@ -159,17 +159,19 @@ class DriverList extends React.Component {
                     <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
                 )}
                 {this.state.isAddingDriver && (
-                    <div>
-                        <input type="text" id="Name" className="form-control" placeholder="Name" />
-                        <input type="text" id="id_Number" className="form-control" placeholder="ID number" />
-                        <input type="text" id="DateofBirth" className="form-control" placeholder="Date of Birth" />
-                        <input type="text" id="Gender" className="form-control" placeholder="Gender" />
-                        <input type="text" id="PhoneNumber" className="form-control" placeholder="Phone number" />
-                        <input type="text" id="LicenseGrade" className="form-control" placeholder="License grade" />
-                        <input type="text" id="LicenseNumber" className="form-control" placeholder="License number" />
-                        <input type="text" id="Availability" className="form-control" placeholder="Status" />
-                        <button type="button" className="btn btn-success" onClick={this.saveNewDriver}>Save</button>
-                        <button type="button" className="btn btn-secondary" onClick={this.cancelAddDriver}>Cancel</button>
+                    <div className="popup">
+                        <div className="popup-content">
+                            <input type="text" id="Name" className="form-control" placeholder="Name" />
+                            <input type="text" id="id_Number" className="form-control" placeholder="ID number" />
+                            <input type="text" id="DateofBirth" className="form-control" placeholder="Date of Birth" />
+                            <input type="text" id="Gender" className="form-control" placeholder="Gender" />
+                            <input type="text" id="PhoneNumber" className="form-control" placeholder="Phone number" />
+                            <input type="text" id="LicenseGrade" className="form-control" placeholder="License grade" />
+                            <input type="text" id="LicenseNumber" className="form-control" placeholder="License number" />
+                            <input type="text" id="Availability" className="form-control" placeholder="Status" />
+                            <button type="button" className="btn btn-success" onClick={this.saveNewDriver}>Save</button>
+                            <button type="button" className="btn btn-secondary" onClick={this.cancelAddDriver}>Cancel</button>
+                        </div>
                     </div>
                 )}
                 <table className="table table-hover mt-3" align="center">
