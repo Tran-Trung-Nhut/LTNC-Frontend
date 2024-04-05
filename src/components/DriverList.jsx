@@ -10,6 +10,7 @@ class DriverList extends React.Component {
             drivers: [],
             DataisLoaded: false,
             isAddingDriver: false,
+            searchResults: []
         };
     }
 
@@ -23,6 +24,22 @@ class DriverList extends React.Component {
                 this.setState({ 
                     drivers: res.data,
                     DataisLoaded: true,
+                });
+            });
+    }
+
+    handleInput = (event) =>{
+        const searchStr = event.target.value;
+        this.setState({searchStr}, () => {
+            this.findDriverByNameorID();
+        })
+    }
+
+    findDriverByNameorID = () =>{
+        axios.get(`http://localhost:8000/Driver/find?str=${this.state.searchStr}`)
+            .then(res =>{
+                this.setState({
+                    drivers: res.data
                 });
             });
     }
@@ -119,6 +136,8 @@ class DriverList extends React.Component {
         
     }
 
+    
+
     saveEditedDriver = (driverId) => {
         const { editedDriver } = this.state;
         axios.put(`http://localhost:8000/Driver/update`, editedDriver)
@@ -172,6 +191,9 @@ class DriverList extends React.Component {
                 {userRole === 'admin' && (
                     <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
                 )}
+                <div style={{ position: 'relative' }}>
+                    <input type="text" value={this.state.searchStr} placeholder="Name/ID number" onChange={this.handleInput}/>
+                </div>
                 {this.state.isAddingDriver && (
                     <div className="popup">
                         <div className="popup-content">
