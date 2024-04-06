@@ -1,15 +1,18 @@
 import React, { Component } from "react";
 import "./App.css";
-import Home from "./components/Home";
+import Header from "./components/Header";
+import { AuthProvider } from "./components/Global/AuthContext";
 
 class App extends Component {
     render() {
         return (
+        <AuthProvider>
             <div className="App">
-                <Home/>
+                <Header></Header>
             </div>
+        </AuthProvider>
         );
-    }
+            }
 }
 
 export default App;

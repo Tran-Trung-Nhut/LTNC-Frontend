@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "axios"; 
-import "./DriverList.css"
-class DriverList extends React.Component {
-
+import "./Driver.css"
+import Login from "./Login";
+import AuthContext from "./Global/AuthContext";
+class Driver extends React.Component {
     // Constructor
     constructor(props) {
         super(props);
@@ -10,9 +11,11 @@ class DriverList extends React.Component {
             drivers: [],
             DataisLoaded: false,
             isAddingDriver: false,
-            searchResults: []
+            searchResults: [],
         };
     }
+
+    static contextType = AuthContext;
 
     // execute the code
     componentDidMount() {
@@ -27,6 +30,7 @@ class DriverList extends React.Component {
                 });
             });
     }
+
 
     handleInput = (event) =>{
         const searchStr = event.target.value;
@@ -168,6 +172,10 @@ class DriverList extends React.Component {
         
     }
     
+    handleLogin = () =>{
+        this.setState({isLoggedIn : true})
+    }
+
     toggleAddDriverForm = () => {
         this.setState(prevState => ({
             isAddingDriver: !prevState.isAddingDriver
@@ -175,8 +183,9 @@ class DriverList extends React.Component {
     }
 
     render() {
-        const { DataisLoaded, drivers, editedDriverId,editedDriver } = this.state;
-        const userRole = localStorage.getItem('userRole');
+        const { DataisLoaded, drivers, editedDriverId,editedDriver    } = this.state;
+        const { isLoggedIn, userRole, password } = this.context
+        
         if (!DataisLoaded)
             return (
                 <div>
@@ -186,6 +195,8 @@ class DriverList extends React.Component {
  
         return (
             <div className="App">
+            {isLoggedIn && (
+             <div>
                 <h1 className="Driver" >List of Driver</h1>
                 <div className="container">
                 {userRole === 'admin' && (
@@ -285,9 +296,11 @@ class DriverList extends React.Component {
                     ))}
                  </table>
                 </div>
+                </div>)}
+                {!isLoggedIn && (<Login></Login>)}
             </div>
         );
     }
 }
  
-export default DriverList;
+export default Driver;

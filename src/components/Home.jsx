@@ -1,70 +1,22 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import "./Home.css";
-import DriverList from "./DriverList";
-import VehicleList from "./Vehicle";
 import Login from "./Login"
 import Footer from "./Footer";
-import Header from "./Header";
+import AuthContext from "./Global/AuthContext";
 
 function Home() {
-    const [isLoginnedIn, setIsLoginnedIn] = useState(false);
-    // const [userRole, setUserRole] = useState('');
-
-    const handleLogin = (role, id_number) => {
-        setIsLoginnedIn(true);
-        // setUserRole(role);
-        localStorage.setItem('userRole',role);
-        localStorage.setItem('id_number', id_number);
-    }
-    
-    const [showDriverList, setShowDriverList] = useState(false);
-    const [showVehicleList, setShowVehicleList] = useState(false);
-
-    const VehicleClick = () =>{
-        if(!showVehicleList) setShowVehicleList(true);
-        else setShowVehicleList(false);
-        setShowDriverList(false);
-    }
-
-    const DriverClick = () =>{
-        setShowVehicleList(false);
-        if(!showDriverList) setShowDriverList(true);
-        else setShowDriverList(false);
-    }
+    const { isLoggedIn } = useContext(AuthContext);
     return (
-        <div className="Homepage">
-        <Header/>
-        {!isLoginnedIn ? (
-            <Login handleLogin={handleLogin} />
-        ) : (
-            <>
-            <h1>Welcome to Transportation Website</h1>
-
-            <div>
-                <button
-                    type="button"
-                    id="watchDriver"
-                    className={`btn btn-success ${showDriverList ? 'active' : ''}`}
-                    onClick={DriverClick}
-                >
-                    <strong>Driver</strong>
-                </button>
-
-                <button
-                    type="button"
-                    id="watchVehicle"
-                    className={`btn btn-success ${showVehicleList ? 'active' : ''}`}
-                    onClick={VehicleClick}
-                >
-                    <strong>Vehicle</strong>
-                </button>
+            <div className="Homepage">
+            {!isLoggedIn ? (
+                <Login/>
+            ) : (
+                <>
+                    <h1>Welcome to Transportation Website</h1>
+                </>
+            )}
+            <Footer className="Footer"/>
             </div>
-            {showDriverList && <DriverList/>}
-            {showVehicleList && <VehicleList/>}
-            </>
-        )}
-        <Footer className="Footer"/>
-        </div>
     );
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios"; // uimport axios
-class VehicleList extends React.Component {
+import AuthContext from "./Global/AuthContext";
+class Vehicle extends React.Component {
 
     // Constructor
     constructor(props) {
@@ -211,4 +212,4 @@ class VehicleList extends React.Component {
     }
 }
  
-export default VehicleList;
+export default Vehicle;
