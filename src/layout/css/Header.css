@@ -1,0 +1,18 @@
+.bar {
+    background-color: transparent !important;
+    box-shadow: none; 
+  }
+  
+.tool {
+display: flex;
+justify-content: space-between;
+color: black;
+}
+
+.tool a {
+color: black; /* Đặt màu chữ cho các liên kết là đen */
+text-decoration: none; /* Loại bỏ gạch chân cho các liên kết */
+font-weight: bold; /* Đặt đậm cho các liên kết */
+margin: 0 10px; /* Tạo khoảng cách giữa các liên kết */
+}
+

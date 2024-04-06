@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useState} from "react";
 import axios from "axios";
-import AuthContext from "./Global/AuthContext";
+import AuthContext from "../Global/AuthContext";
 
 function Login(){
     const [username, setUsername] = useState('');
@@ -30,10 +30,14 @@ function Login(){
     }
 
     return (
-        <div>Login
+        <div className="login">Login
             <div>
                 <input type="text" value={username} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/>
+            </div>
+            <div>
                 <input type="password" value={password} placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
+            </div>
+            <div>
                 <button type="submit" className="btn btn-success" onClick={handleLogin}>Submit</button>
             </div>
         </div>        

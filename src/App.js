@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
-import Header from "./components/Header";
-import { AuthProvider } from "./components/Global/AuthContext";
+import Header from "./layout/Header";
+import { AuthProvider } from "./Global/AuthContext";
 
 class App extends Component {
     render() {

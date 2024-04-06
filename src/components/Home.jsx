@@ -1,8 +1,8 @@
 import React, {useContext, useState} from "react";
-import "./Home.css";
-import Login from "./Login"
-import Footer from "./Footer";
-import AuthContext from "./Global/AuthContext";
+import "./css/Home.css";
+import Login from "./Login";
+import AuthContext from "../Global/AuthContext";
+import Footer from "../layout/Footer";
 
 function Home() {
     const { isLoggedIn } = useContext(AuthContext);
@@ -12,7 +12,10 @@ function Home() {
                 <Login/>
             ) : (
                 <>
-                    <h1>Welcome to Transportation Website</h1>
+                    <h1>
+                        <img src={"https://img.lovepik.com/element/45004/6953.png_860.png"} alt="Logo" style={{ width: "70px", height: "70px" }} />
+                        DriveCare
+                    </h1>
                 </>
             )}
             <Footer className="Footer"/>

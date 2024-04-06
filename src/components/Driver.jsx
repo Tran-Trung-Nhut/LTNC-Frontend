@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import axios from "axios"; 
-import "./Driver.css"
+import "./css/Driver.css"
 import Login from "./Login";
-import AuthContext from "./Global/AuthContext";
+import AuthContext from "../Global/AuthContext";
 class Driver extends React.Component {
     // Constructor
     constructor(props) {
@@ -194,7 +194,7 @@ class Driver extends React.Component {
             );
  
         return (
-            <div className="App">
+            <div>
             {isLoggedIn && (
              <div>
                 <h1 className="Driver" >List of Driver</h1>
@@ -297,7 +297,7 @@ class Driver extends React.Component {
                  </table>
                 </div>
                 </div>)}
-                {!isLoggedIn && (<Login></Login>)}
+                {!isLoggedIn && (<div className="login"><Login/></div>)}
             </div>
         );
     }

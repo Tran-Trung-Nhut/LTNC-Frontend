@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios"; // uimport axios
-import AuthContext from "./Global/AuthContext";
 class Vehicle extends React.Component {
 
     // Constructor
