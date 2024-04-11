@@ -205,7 +205,7 @@ class Driver extends React.Component {
                 <div style={{ position: 'relative' }}>
                     <input type="text" value={this.state.searchStr} placeholder="Name/ID number" onChange={this.handleInput}/>
                 </div>
-                {this.state.isAddingDriver && (
+                {this.state.isAddingDriver == true && (
                     <div className="popup">
                         <div className="popup-content">
                             <input type="text" id="Name" className="form-control" placeholder="Name" />
