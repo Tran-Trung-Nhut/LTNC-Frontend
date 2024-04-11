@@ -8,6 +8,7 @@ function Home() {
     const { isLoggedIn } = useContext(AuthContext);
     return (
             <div className="Homepage">
+                
             {!isLoggedIn ? (
                 <Login/>
             ) : (
