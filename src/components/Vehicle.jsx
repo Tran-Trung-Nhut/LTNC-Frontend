@@ -7,7 +7,8 @@ class Vehicle extends React.Component {
     this.state = {
       vehicle: [],
       DataisLoaded: false,
-      isOpenCreateForm: false,
+      isOpenVehicleForm: false,
+      editingVehicle: null,
     };
   }
   // execute the code
@@ -47,24 +48,41 @@ class Vehicle extends React.Component {
       status: status,
     };
 
-    console.log("newVehicle: ", newVehicle);
-
-    axios
-      .post("http://localhost:8000/Vehicle/add", newVehicle)
-      .then((response) => {
-        console.log("Vehicle added successfully:", response.data);
-        this.fetchVehicle();
-        // Đóng bảng nhập liệu
-        this.setState({ isOpenCreateForm: false });
-      })
-      .catch((error) => {
-        console.error("Error adding vehicle:", error);
-        alert("Failed to add vehicle. Please try again later.");
-      });
+    if (this.state.editingVehicle) {
+      axios
+        .put(`http://localhost:8000/Vehicle/update`, {
+          id: this.state.editingVehicle.id,
+          ...newVehicle,
+        })
+        .then(() => {
+          this.setState({
+            editingVehicle: null,
+            isOpenVehicleForm: false,
+          });
+          this.fetchVehicle();
+        })
+        .catch((error) => {
+          console.error("Error updating vehicles:", error);
+          alert("Failed to update vehicle. Please try again later.");
+        });
+    } else {
+      axios
+        .post("http://localhost:8000/Vehicle/add", newVehicle)
+        .then((response) => {
+          console.log("Vehicle added successfully:", response.data);
+          this.fetchVehicle();
+          // Đóng bảng nhập liệu
+          this.setState({ isOpenVehicleForm: false });
+        })
+        .catch((error) => {
+          console.error("Error adding vehicle:", error);
+          alert("Failed to add vehicle. Please try again later.");
+        });
+    }
   };
 
   cancelAddVehicle = () => {
-    this.setState({ isOpenCreateForm: false });
+    this.setState({ isOpenVehicleForm: false, editingVehicle: null });
   };
 
   fetchVehicle = () => {
@@ -84,8 +102,8 @@ class Vehicle extends React.Component {
 
   editVehicle = (vehicleId) => {
     this.setState({
-      editedVehicleId: vehicleId,
-      editedVehicle: this.state.vehicles.find(
+      isOpenVehicleForm: true,
+      editingVehicle: this.state.vehicles.find(
         (vehicle) => vehicle.id === vehicleId
       ),
     });
@@ -134,14 +152,12 @@ class Vehicle extends React.Component {
   };
 
   toggleAddVehicleForm = () => {
-    this.setState({ isOpenCreateForm: true });
+    this.setState({ isOpenVehicleForm: true });
   };
 
   render() {
-    const { DataisLoaded, vehicles, editedVehicleId, editedVehicle } =
-      this.state;
+    const { DataisLoaded, vehicles, editingVehicle } = this.state;
 
-    console.log("HELPPP: ", editedVehicleId);
     if (!DataisLoaded)
       return (
         <div>
@@ -160,7 +176,7 @@ class Vehicle extends React.Component {
           >
             Add new vehicle
           </button>
-          {this.state.isOpenCreateForm && (
+          {this.state.isOpenVehicleForm && (
             <div className="popup">
               <div className="popup-content">
                 <input
@@ -168,42 +184,49 @@ class Vehicle extends React.Component {
                   id="newVehicleType"
                   className="form-control"
                   placeholder="Type"
+                  defaultValue={editingVehicle?.type}
                 />
                 <input
                   type="text"
                   id="newVehicleWidth"
                   className="form-control"
                   placeholder="Width"
+                  defaultValue={editingVehicle?.size.width}
                 />
                 <input
                   type="text"
                   id="newVehicleLength"
                   className="form-control"
                   placeholder="Length"
+                  defaultValue={editingVehicle?.size.length}
                 />
                 <input
                   type="text"
                   id="newVehicleHeight"
                   className="form-control"
                   placeholder="Height"
+                  defaultValue={editingVehicle?.size.height}
                 />
                 <input
                   type="text"
                   id="newVehicleRegisteredNumber"
                   className="form-control"
                   placeholder="Registered Number"
+                  defaultValue={editingVehicle?.registeredNumber}
                 />
                 <input
                   type="text"
                   id="newVehicleLoadCapacity"
                   className="form-control"
                   placeholder="Load Capacity (in tons)"
+                  defaultValue={editingVehicle?.capacity}
                 />
                 <input
                   type="text"
                   id="newVehicleStatus"
                   className="form-control"
                   placeholder="Status"
+                  defaultValue={editingVehicle?.status}
                 />
                 <button
                   type="button"
@@ -241,30 +264,20 @@ class Vehicle extends React.Component {
                 <td>{index + 1}</td>
                 <td>{vehicle.registeredNumber}</td>
                 <td>{vehicle.type}</td>
-                <td>{vehicle.width}</td>
-                <td>{vehicle.height}</td>
-                <td>{vehicle.length}</td>
+                <td>{vehicle.size.width}</td>
+                <td>{vehicle.size.height}</td>
+                <td>{vehicle.size.length}</td>
                 <td>{vehicle.capacity}</td>
                 <td>{vehicle.status}</td>
 
                 <td>
-                  {editedVehicleId === vehicle.id ? (
-                    <button
-                      type="button"
-                      className="btn btn-success"
-                      onClick={() => this.saveEditedVehicle(vehicle.id)}
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={() => this.editVehicle(vehicle.id)}
-                    >
-                      Edit
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => this.editVehicle(vehicle.id)}
+                  >
+                    Edit
+                  </button>
                   <button
                     type="button"
                     className="btn btn-danger mx-2"
