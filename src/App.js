@@ -9,7 +9,7 @@ class App extends Component {
         return (
         <AuthProvider>
             <div className="App">
-                <Home/>
+                <Header/>
             </div>
         </AuthProvider>
         );
