@@ -1,154 +1,120 @@
 import React from "react";
 import axios from "axios"; // uimport axios
+
+const defaultFormData = {
+  id: undefined,
+  type: "CONTAINER",
+  registeredNumber: "",
+  capacity: "",
+  size: {
+    width: "",
+    length: "",
+    height: "",
+  },
+  status: "AVAILABLE",
+};
+
 class Vehicle extends React.Component {
-  // Constructor
   constructor(props) {
     super(props);
     this.state = {
-      vehicle: [],
-      DataisLoaded: false,
-      isOpenCreateForm: false,
+      vehicles: [],
+      isOpenVehicleForm: false,
+      formData: defaultFormData,
     };
   }
-  // execute the code
-  componentDidMount() {
-    axios.get("http://localhost:8000/Vehicle/list").then((res) => {
-      this.setState({
-        vehicles: res.data,
-        DataisLoaded: true,
-      });
+
+  componentDidMount = () => {
+    this.fetchVehicles();
+  };
+
+  fetchVehicles = () => {
+    axios.get("http://localhost:8000/Vehicle/list").then((response) => {
+      this.setState({ vehicles: response.data });
     });
-  }
+  };
 
-  saveNewVehicle = () => {
-    // Lấy thông tin từ các input
-    const type = document.getElementById("newVehicleType").value;
-    const registeredNumber = document.getElementById(
-      "newVehicleRegisteredNumber"
-    ).value;
-    const loadCapacity = document.getElementById(
-      "newVehicleLoadCapacity"
-    ).value;
+  handleOpenVehicleForm = () => {
+    this.setState({ isOpenVehicleForm: true });
+  };
 
-    const width = document.getElementById("newVehicleWidth").value;
-    const length = document.getElementById("newVehicleLength").value;
-    const height = document.getElementById("newVehicleHeight").value;
-    const status = document.getElementById("newVehicleStatus").value;
+  handleCloseVehicleForm = () => {
+    this.setState({ isOpenVehicleForm: false });
+    this.handleClearForm();
+  };
 
-    const newVehicle = {
-      type: type,
-      registeredNumber: registeredNumber,
-      capacity: loadCapacity,
-      size: {
-        width: width,
-        length: length,
-        height: height,
-      },
-      status: status,
-    };
-
-    console.log("newVehicle: ", newVehicle);
-
+  handleSubmitCreateForm = () => {
     axios
-      .post("http://localhost:8000/Vehicle/add", newVehicle)
+      .post("http://localhost:8000/Vehicle/add", this.state.formData)
       .then((response) => {
-        console.log("Vehicle added successfully:", response.data);
-        this.fetchVehicle();
-        // Đóng bảng nhập liệu
-        this.setState({ isOpenCreateForm: false });
-      })
-      .catch((error) => {
-        console.error("Error adding vehicle:", error);
-        alert("Failed to add vehicle. Please try again later.");
+        if (response.status === 200) {
+          this.setState({ isOpenVehicleForm: false });
+          this.fetchVehicles();
+          this.handleClearForm();
+        }
       });
   };
 
-  cancelAddVehicle = () => {
-    this.setState({ isOpenCreateForm: false });
-  };
-
-  fetchVehicle = () => {
+  handleSubmitUpdateForm = () => {
     axios
-      .get("http://localhost:8000/Vehicle/list")
-      .then((res) => {
-        this.setState({
-          vehicles: res.data,
-          DataisLoaded: true,
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching vehicles:", error);
-        alert("Failed to fetch vehicles. Please try again later.");
+      .put("http://localhost:8000/Vehicle/update", this.state.formData)
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ isOpenVehicleForm: false });
+          this.fetchVehicles();
+          this.handleClearForm();
+        }
       });
   };
 
-  editVehicle = (vehicleId) => {
+  handleClearForm = () => {
     this.setState({
-      editedVehicleId: vehicleId,
-      editedVehicle: this.state.vehicles.find(
-        (vehicle) => vehicle.id === vehicleId
-      ),
+      formData: defaultFormData,
     });
   };
 
-  handleChange = (event) => {
+  handleChangeInput = (event) => {
     const { name, value } = event.target;
-    this.setState((prevState) => ({
-      editedVehicle: {
-        ...prevState.editVehicle,
+
+    this.setState({
+      formData: {
+        ...this.state.formData,
         [name]: value,
       },
-    }));
+    });
   };
 
-  saveEditedVehicle = (vehicleId) => {
-    const { editedVehicle } = this.state;
-    axios
-      .put(`http://localhost:8000/Vehicle/update`, editedVehicle)
-      .then(() => {
-        this.setState({
-          editedVehicle: null,
-        });
-        this.fetchVehicle();
-      })
-      .catch((error) => {
-        console.error("Error updating vehicles:", error);
-        alert("Failed to update vehicle. Please try again later.");
-      });
+  handleChangeSizeInput = (event) => {
+    const { name, value } = event.target;
+
+    this.setState({
+      formData: {
+        ...this.state.formData,
+        size: {
+          ...this.state.formData.size,
+          [name]: value,
+        },
+      },
+    });
   };
 
-  deleteVehicle = (id) => {
+  handleDelete = (vehicleId) => {
     const isConfirmed = window.confirm("Are you sure to delete this vehicle?");
     if (isConfirmed) {
       axios
-        .delete(`http://localhost:8000/Vehicle/delete/${id}`)
-        .then(() => {
-          this.setState((prevState) => ({
-            vehicles: prevState.vehicles.filter((vehicle) => vehicle.id !== id),
-          }));
-        })
-        .catch((error) => {
-          console.log("Error deleting vehicle:", error);
+        .delete(`http://localhost:8000/Vehicle/delete/${vehicleId}`)
+        .then((response) => {
+          if (response.status === 200) this.fetchVehicles();
         });
     }
   };
 
-  toggleAddVehicleForm = () => {
-    this.setState({ isOpenCreateForm: true });
+  handleEdit = (vehicle) => {
+    this.handleOpenVehicleForm(true);
+    this.setState({ formData: vehicle });
   };
 
   render() {
-    const { DataisLoaded, vehicles, editedVehicleId, editedVehicle } =
-      this.state;
-
-    console.log("HELPPP: ", editedVehicleId);
-    if (!DataisLoaded)
-      return (
-        <div>
-          <h1> </h1>
-        </div>
-      );
-
     return (
       <div className="App">
         <h1 className="Vehicle">List of Vehicle</h1>
@@ -156,72 +122,10 @@ class Vehicle extends React.Component {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={this.toggleAddVehicleForm}
+            onClick={this.handleOpenVehicleForm}
           >
             Add new vehicle
           </button>
-          {this.state.isOpenCreateForm && (
-            <div className="popup">
-              <div className="popup-content">
-                <input
-                  type="text"
-                  id="newVehicleType"
-                  className="form-control"
-                  placeholder="Type"
-                />
-                <input
-                  type="text"
-                  id="newVehicleWidth"
-                  className="form-control"
-                  placeholder="Width"
-                />
-                <input
-                  type="text"
-                  id="newVehicleLength"
-                  className="form-control"
-                  placeholder="Length"
-                />
-                <input
-                  type="text"
-                  id="newVehicleHeight"
-                  className="form-control"
-                  placeholder="Height"
-                />
-                <input
-                  type="text"
-                  id="newVehicleRegisteredNumber"
-                  className="form-control"
-                  placeholder="Registered Number"
-                />
-                <input
-                  type="text"
-                  id="newVehicleLoadCapacity"
-                  className="form-control"
-                  placeholder="Load Capacity (in tons)"
-                />
-                <input
-                  type="text"
-                  id="newVehicleStatus"
-                  className="form-control"
-                  placeholder="Status"
-                />
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={this.saveNewVehicle}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={this.cancelAddVehicle}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
           <table className="table table-hover mt-3" align="center">
             <thead className="thead-light">
               <tr>
@@ -236,39 +140,33 @@ class Vehicle extends React.Component {
                 <th scope="col">Option</th>
               </tr>
             </thead>
-            {vehicles?.map((vehicle, index) => (
+            {this.state.vehicles.map((vehicle, index) => (
               <tr key={vehicle.id}>
                 <td>{index + 1}</td>
                 <td>{vehicle.registeredNumber}</td>
                 <td>{vehicle.type}</td>
-                <td>{vehicle.width}</td>
-                <td>{vehicle.height}</td>
-                <td>{vehicle.length}</td>
+                <td>{vehicle.size.width}</td>
+                <td>{vehicle.size.height}</td>
+                <td>{vehicle.size.length}</td>
                 <td>{vehicle.capacity}</td>
                 <td>{vehicle.status}</td>
 
                 <td>
-                  {editedVehicleId === vehicle.id ? (
-                    <button
-                      type="button"
-                      className="btn btn-success"
-                      onClick={() => this.saveEditedVehicle(vehicle.id)}
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn btn-warning"
-                      onClick={() => this.editVehicle(vehicle.id)}
-                    >
-                      Edit
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => {
+                      this.handleEdit(vehicle);
+                    }}
+                  >
+                    Edit
+                  </button>
                   <button
                     type="button"
                     className="btn btn-danger mx-2"
-                    onClick={() => this.deleteVehicle(vehicle.id)}
+                    onClick={() => {
+                      this.handleDelete(vehicle.id);
+                    }}
                   >
                     Delete
                   </button>
@@ -277,6 +175,95 @@ class Vehicle extends React.Component {
             ))}
           </table>
         </div>
+
+        {this.state.isOpenVehicleForm && (
+          <div className="popup">
+            <div className="popup-content">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Type"
+                name="type"
+                value={this.state.formData.type}
+                onChange={this.handleChangeInput}
+              />
+              <input
+                type="number"
+                id="newVehicleWidth"
+                className="form-control"
+                placeholder="Width"
+                name="width"
+                value={this.state.formData.size.width}
+                onChange={this.handleChangeSizeInput}
+              />
+              <input
+                type="number"
+                id="newVehicleLength"
+                className="form-control"
+                placeholder="Length"
+                name="length"
+                value={this.state.formData.size.length}
+                onChange={this.handleChangeSizeInput}
+              />
+              <input
+                type="number"
+                id="newVehicleHeight"
+                className="form-control"
+                placeholder="Height"
+                name="height"
+                value={this.state.formData.size.height}
+                onChange={this.handleChangeSizeInput}
+              />
+              <input
+                type="text"
+                id="newVehicleRegisteredNumber"
+                className="form-control"
+                placeholder="Registered Number"
+                name="registeredNumber"
+                value={this.state.formData.registeredNumber}
+                onChange={this.handleChangeInput}
+              />
+              <input
+                type="number"
+                id="newVehicleLoadCapacity"
+                className="form-control"
+                placeholder="Load Capacity (in tons)"
+                name="capacity"
+                value={this.state.formData.capacity}
+                onChange={this.handleChangeInput}
+              />
+              <input
+                type="text"
+                id="newVehicleStatus"
+                className="form-control"
+                placeholder="Status"
+                name="status"
+                value={this.state.formData.status}
+                onChange={this.handleChangeInput}
+              />
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={() => {
+                  if (this.state.formData.id) {
+                    this.handleSubmitUpdateForm();
+                  } else {
+                    this.handleSubmitCreateForm();
+                  }
+                }}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={this.handleCloseVehicleForm}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
