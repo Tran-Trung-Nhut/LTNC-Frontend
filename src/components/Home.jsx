@@ -21,6 +21,11 @@ function Home() {
                 </>
             )}
             <Footer className="Footer"/>
+                <>
+                    <h2>
+                        
+                    </h2>
+                </>
             </div>
     );
 }
