@@ -141,8 +141,7 @@ class Vehicle extends React.Component {
     const { DataisLoaded, vehicles, editedVehicleId, editedVehicle } =
       this.state;
 
-    console.log("HELPPP: ", editedVehicleId);
-    if (!DataisLoaded)
+     if (!DataisLoaded)
       return (
         <div>
           <h1> </h1>

@@ -56,7 +56,7 @@ class Driver extends React.Component {
         const phone_number = document.getElementById("PhoneNumber").value;
         const licenseGrade = document.getElementById("LicenseGrade").value;
         const licenseNumber = document.getElementById("LicenseNumber").value;
-        const availability = document.getElementById("Availability").value;
+        const availability = "Free";
 
         const license = {
             grade: licenseGrade,
@@ -210,12 +210,11 @@ class Driver extends React.Component {
                         <div className="popup-content">
                             <input type="text" id="Name" className="form-control" placeholder="Name" />
                             <input type="text" id="id_Number" className="form-control" placeholder="ID number" />
-                            <input type="text" id="DateofBirth" className="form-control" placeholder="Date of Birth" />
+                            <input type="date" id="DateofBirth" className="form-control" placeholder="Date of Birth" />
                             <input type="text" id="Gender" className="form-control" placeholder="Gender" />
                             <input type="text" id="PhoneNumber" className="form-control" placeholder="Phone number" />
                             <input type="text" id="LicenseGrade" className="form-control" placeholder="License grade" />
                             <input type="text" id="LicenseNumber" className="form-control" placeholder="License number" />
-                            <input type="text" id="Availability" className="form-control" placeholder="Status" />
                             <button type="button" className="btn btn-success" onClick={this.saveNewDriver}>Save</button>
                             <button type="button" className="btn btn-secondary" onClick={this.cancelAddDriver}>Cancel</button>
                         </div>
@@ -252,7 +251,7 @@ class Driver extends React.Component {
                         </td>
                         <td>
                             {editedDriverId === driver.id ?
-                                <input type="text" name="dob" value={editedDriver.dob} onChange={this.handleChange} />
+                                <input type="date" name="dob" value={editedDriver.dob} onChange={this.handleChange} />
                                 : driver.dob}
                         </td>
                         <td>
