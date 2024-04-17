@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "./css/Trip.css";
+import AuthContext from "../Global/AuthContext";
+import Login from "./Login";
+
 
 const Trip = () => {
+  const { isLoggedIn,userRole,password } = useContext(AuthContext);
   const [trips, setTrips] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +57,7 @@ const Trip = () => {
       [name]: value
     }));
   }
+
 
   const handleSubmit = () => {
     axios.post("http://localhost:8000/Trip/add", newTrip)
@@ -130,92 +135,96 @@ const Trip = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  return (
-    <div className="trip-container">
-      <h1 className="trip-heading">List of Trips</h1>
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-      </div>
-      <table className="trip-table">
-        <thead>
-          <tr>
-            <th>Departure Location</th>
-            <th>Arrival Location</th>
-            <th>Departure Time</th>
-            <th>Estimated Arrival Time</th>
-            <th>Actual Arrival Time</th>
-            <th>Driver Name</th>
-            <th>Current Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trips.filter(trip => {
-            if (searchTerm === "") {
-              return trip;
-            } else if (
-              trip.departureTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.departureLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.arrivalLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.estimatedArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.actualArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.currentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return trip;
-            }
-            return null;
-          }).map(trip => (
-            <tr key={trip.tripID}>
-              <td>{trip.departureLocation}</td>
-              <td>{trip.arrivalLocation}</td>
-              <td>{trip.departureTime}</td>
-              <td>{trip.estimatedArrivalTime}</td>
-              <td>{trip.actualArrivalTime}</td>
-              <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
-              <td>{trip.currentStatus}</td>
-              <td>
-                <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
-                <button className="delete-btn" onClick={() => handleDelete(trip.tripID)}>Delete</button>
-                {trip.currentStatus !== "Đã hoàn thành" && (
-                  <button className="mark-btn" onClick={() => markCompleted(trip.tripID)}>Mark Completed</button>
-                )}
-              </td>
+  if (!isLoggedIn) {
+    return(
+      <Login></Login>
+    )
+  }else{
+    return (
+      <div className="trip-container">
+        <h1 className="trip-heading">List of Trips</h1>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <table className="trip-table">
+          <thead>
+            <tr>
+              <th>Departure Location</th>
+              <th>Arrival Location</th>
+              <th>Departure Time</th>
+              <th>Estimated Arrival Time</th>
+              <th>Actual Arrival Time</th>
+              <th>Driver Name</th>
+              <th>Current Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="add-trip-form">
-        {isAddingTrip && (
-          <div className="form-group">
-            <input type="text" name="departureTime" value={newTrip.departureTime} onChange={handleInputChange} placeholder="Departure Time" />
-            <input type="text" name="departureLocation" value={newTrip.departureLocation} onChange={handleInputChange} placeholder="Departure Location" />
-            <input type="text" name="arrivalLocation" value={newTrip.arrivalLocation} onChange={handleInputChange} placeholder="Arrival Location" />
-            <input type="text" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} onChange={handleInputChange} placeholder="Estimated Arrival Time" />
-            <input type="text" name="actualArrivalTime" value={newTrip.actualArrivalTime} onChange={handleInputChange} placeholder="Actual Arrival Time" />
-            <select name="driverID" value={newTrip.driverID} onChange={handleInputChange}>
-              <option value="">Select Driver</option>
-              {drivers.map(driver => (
-                <option key={driver.id} value={driver.id}>{driver.name}</option>
-              ))}
-            </select>
-            <button className="submit-btn" onClick={handleSubmit}>Save</button>
-            <button className="cancel-btn" onClick={() => setIsAddingTrip(false)}>Cancel</button>
-          </div>
-        )}
-        {!isAddingTrip && (
-          <button className="add-btn" onClick={() => setIsAddingTrip(true)}>Add Trip</button>
-        )}
+          </thead>
+          <tbody>
+            {trips.filter(trip => {
+              if (searchTerm === "") {
+                return trip;
+              } else if (
+                trip.departureTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                trip.departureLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                trip.arrivalLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                trip.estimatedArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                trip.actualArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                trip.currentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase().includes(searchTerm.toLowerCase())
+              ) {
+                return trip;
+              }
+              return null;
+            }).map(trip => (
+              <tr key={trip.tripID}>
+                <td>{trip.departureLocation}</td>
+                <td>{trip.arrivalLocation}</td>
+                <td>{trip.departureTime}</td>
+                <td>{trip.estimatedArrivalTime}</td>
+                <td>{trip.actualArrivalTime}</td>
+                <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
+                <td>{trip.currentStatus}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
+                  <button className="delete-btn" onClick={() => handleDelete(trip.tripID)}>Delete</button>
+                  {trip.currentStatus !== "Đã hoàn thành" && (
+                    <button className="mark-btn" onClick={() => markCompleted(trip.tripID)}>Mark Completed</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="add-trip-form">
+          {isAddingTrip && (
+            <div className="form-group">
+              <input type="time" name="departureTime" value={newTrip.departureTime} onChange={handleInputChange} placeholder="Departure Time" />
+              <input type="text" name="departureLocation" value={newTrip.departureLocation} onChange={handleInputChange} placeholder="Departure Location" />
+              <input type="text" name="arrivalLocation" value={newTrip.arrivalLocation} onChange={handleInputChange} placeholder="Arrival Location" />
+              <input type="time" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} onChange={handleInputChange} placeholder="Estimated Arrival Time" />
+              <input type="time" name="actualArrivalTime" value={newTrip.actualArrivalTime} onChange={handleInputChange} placeholder="Actual Arrival Time" />
+              <select name="driverID" value={newTrip.driverID} onChange={handleInputChange}>
+                <option value="">Select Driver</option>
+                {drivers.map(driver => (
+                  <option key={driver.id} value={driver.id}>{driver.name}</option>
+                ))}
+              </select>
+              <button className="submit-btn" onClick={handleSubmit}>Save</button>
+              <button className="cancel-btn" onClick={() => setIsAddingTrip(false)}>Cancel</button>
+            </div>
+          )}
+          {!isAddingTrip && (
+            <button className="add-btn" onClick={() => setIsAddingTrip(true)}>Add Trip</button>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }}
 
 export default Trip;

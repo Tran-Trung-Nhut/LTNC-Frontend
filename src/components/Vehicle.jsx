@@ -1,5 +1,8 @@
 import React from "react";
 import axios from "axios"; // uimport axios
+import AuthContext from "../Global/AuthContext";
+import Login from "./Login";
+import { red } from "@mui/material/colors";
 
 const defaultFormData = {
   id: undefined,
@@ -19,13 +22,28 @@ class Vehicle extends React.Component {
     super(props);
     this.state = {
       vehicles: [],
+      trips:[],
       isOpenVehicleForm: false,
       formData: defaultFormData,
+      error: ""
     };
   }
 
+  showError = (message) =>{
+    this.setState({error:message})
+  }
+
+  static contextType = AuthContext;
+
   componentDidMount = () => {
     this.fetchVehicles();
+    this.fetchTrips();
+  };
+
+  fetchTrips = () => {
+    axios.get("http://localhost:8000/Trip/list").then((response) => {
+      this.setState({ trips: response.data });
+    });
   };
 
   fetchVehicles = () => {
@@ -41,9 +59,16 @@ class Vehicle extends React.Component {
   handleCloseVehicleForm = () => {
     this.setState({ isOpenVehicleForm: false });
     this.handleClearForm();
+    this.showError("")
   };
 
   handleSubmitCreateForm = () => {
+    if (!this.checkAllFieldsFilled()) {
+      this.showError("You have to fill in all fields");
+      return;
+    }else {
+        this.showError("");
+    }
     axios
       .post("http://localhost:8000/Vehicle/add", this.state.formData)
       .then((response) => {
@@ -56,6 +81,12 @@ class Vehicle extends React.Component {
   };
 
   handleSubmitUpdateForm = () => {
+    if (!this.checkAllFieldsFilled()) {
+      this.showError("You have to fill in all fields");
+      return;
+    }else {
+        this.showError("");
+    }
     axios
       .put("http://localhost:8000/Vehicle/update", this.state.formData)
       .then((response) => {
@@ -114,9 +145,21 @@ class Vehicle extends React.Component {
     this.setState({ formData: vehicle });
   };
 
+  checkDriverStatus = (vehicleId) => {
+    const ongoingTrips = this.state.trips.filter(trip => trip.vehicleID === vehicleId && trip.currentStatus === "Chưa hoàn thành");
+    return ongoingTrips.length > 0 ? "ON TRIP" : "AVAILABLE";
+  }
+
+  checkAllFieldsFilled = () => {
+    const { type, registeredNumber, capacity, size } = this.state.formData;
+    return (type !== "" && registeredNumber !== "" && capacity !== "" && size !== "");
+  };
+
   render() {
+    const { isLoggedIn, userRole, password } = this.context
     return (
-      <div className="App">
+      <>
+      {isLoggedIn && (<div className="App">
         <h1 className="Vehicle">List of Vehicle</h1>
         <div className="container">
           <button
@@ -132,9 +175,8 @@ class Vehicle extends React.Component {
                 <th scope="col">No.</th>
                 <th scope="col">Registered Number</th>
                 <th scope="col">Type</th>
-                <th scope="col">Width</th>
-                <th scope="col">Height</th>
-                <th scope="col">Length</th>
+                <th scope="col">Size</th>
+
                 <th scope="col">Load Capacity</th>
                 <th scope="col">Status</th>
                 <th scope="col">Option</th>
@@ -145,9 +187,7 @@ class Vehicle extends React.Component {
                 <td>{index + 1}</td>
                 <td>{vehicle.registeredNumber}</td>
                 <td>{vehicle.type}</td>
-                <td>{vehicle.size.width}</td>
-                <td>{vehicle.size.height}</td>
-                <td>{vehicle.size.length}</td>
+                <td>{vehicle.size.width} x {vehicle.size.height} x {vehicle.size.height}</td>
                 <td>{vehicle.capacity}</td>
                 <td>{vehicle.status}</td>
 
@@ -232,15 +272,7 @@ class Vehicle extends React.Component {
                 value={this.state.formData.capacity}
                 onChange={this.handleChangeInput}
               />
-              <input
-                type="text"
-                id="newVehicleStatus"
-                className="form-control"
-                placeholder="Status"
-                name="status"
-                value={this.state.formData.status}
-                onChange={this.handleChangeInput}
-              />
+              {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
               <button
                 type="button"
                 className="btn btn-success"
@@ -265,6 +297,9 @@ class Vehicle extends React.Component {
           </div>
         )}
       </div>
+      )};
+      {!isLoggedIn && (<Login></Login>)}
+      </>
     );
   }
 }
