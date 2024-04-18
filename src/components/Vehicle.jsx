@@ -2,7 +2,8 @@ import React from "react";
 import axios from "axios"; // uimport axios
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { red } from "@mui/material/colors";
+import { PencilIcon, TrashIcon, TruckIcon } from '@heroicons/react/outline';
+
 
 const defaultFormData = {
   id: undefined,
@@ -167,7 +168,7 @@ class Vehicle extends React.Component {
             className="btn btn-primary"
             onClick={this.handleOpenVehicleForm}
           >
-            Add new vehicle
+            <TruckIcon className="h-6 w-10 text-blue-200" />
           </button>
           <table className="table table-hover mt-3" align="center">
             <thead className="thead-light">
@@ -194,21 +195,21 @@ class Vehicle extends React.Component {
                 <td>
                   <button
                     type="button"
-                    className="btn btn-warning"
+                    className="h-5 w-5 mr-2"
                     onClick={() => {
                       this.handleEdit(vehicle);
                     }}
                   >
-                    Edit
+                    <PencilIcon className="h-5 w-5 text-yellow-400"/>
                   </button>
                   <button
                     type="button"
-                    className="btn btn-danger mx-2"
+                    className="h-5 w-5 mr-2"
                     onClick={() => {
                       this.handleDelete(vehicle.id);
                     }}
                   >
-                    Delete
+                    <TrashIcon className="h-5 w-5 text-red-400"/>
                   </button>
                 </td>
               </tr>

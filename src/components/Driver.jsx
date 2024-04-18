@@ -3,6 +3,8 @@ import axios from "axios";
 import "./css/Driver.css"
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
+import { PencilIcon, TrashIcon, SearchIcon, UserAddIcon, ClockIcon } from '@heroicons/react/outline';
+
 
 const defaultFormDriver = {
     id: undefined,
@@ -260,147 +262,120 @@ class Driver extends React.Component {
              <div>
                 <h1 className="Driver" >List of Driver</h1>
                 <div className="container">
-                {userRole === 'admin' && (
-                    <button type="button" className="btn btn-primary" onClick={this.toggleAddDriverForm}>Add new driver</button>
-                )}
-                <div style={{ position: 'relative' }}>
-                    <input type="text" value={this.state.searchStr} placeholder="Name/ID number" onChange={this.handleInput}/>
-                </div>
-                <table className="table table-hover mt-3" align="center">
-                    <thead className="thead-light">
-                        <tr>
-                        <th scope="col">No.</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">ID number</th>
-                        <th scope="col">Date of Birth</th>  
-                        <th scope="col">Gender</th>  
-                        <th scope="col">Phone Number</th>  
-                        <th scope="col">License</th>  
-                        <th scope="col">Status</th>  
-                        <th scope="col">Option</th>
-                        </tr>
-                    </thead>
-                    {this.state.drivers.map((driver, index) => (
-                        <tr key={driver.id}>
-                            <td>{index + 1}</td>
-                            <td>{driver.name}</td>
-                            <td>{driver.id_number}</td>
-                            <td>{driver.dob}</td>
-                            <td>{driver.gender}</td>
-                            <td>{driver.phone_number}</td>
-                            <td>{driver.license.grade} - {driver.license.number}</td>
-                            <td>{this.checkDriverStatus(driver.id)}</td>
-                            <td>
-                            <button
-                                type="button"
-                                className="btn btn-warning"
-                                onClick={() => {
-                                this.handleEdit(driver);
-                                }}
-                            >
-                                Edit
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-danger mx-2"
-                                onClick={() => {
-                                this.handleDelete(driver.id);
-                                }}
-                            >
-                                Delete
-                            </button>
-                            <button
-                                type="button"
-                                className=""
-                                onClick={() => this.showDrivingHistory(driver.id)}
-                                >
-                                Driving history
-                            </button>
-                            </td>
-                        </tr>
-                        ))}
-                 </table>
-                </div>
-                {this.state.isShowAddingorEdittingTable && (
-                    <div className="popup">
-                        <div className="popup-content">
-                            <input type="text"
-                            id="Name"
-                            className="form-control"
-                            placeholder="Name"
-                            name="name"
-                            value={this.state.defaultDriver.name}
-                            onChange={this.handleChange}/>
-                            <input type="text"
-                            id="id_Number"
-                            className="form-control"
-                            name="id_number"
-                            placeholder="ID number"
-                            value={this.state.defaultDriver.id_number}
-                            onChange={this.handleChange}/>
-                            <input 
-                            type="date"
-                            id="DateofBirth"
-                            className="form-control"
-                            placeholder="Date of Birth"
-                            name="dob"
-                            value={this.state.defaultDriver.dob}
-                            onChange={this.handleChange}/>
-                            <input 
-                            type="text"
-                            id="Gender"
-                            className="form-control"
-                            name="gender"
-                            placeholder="Gender"
-                            value={this.state.defaultDriver.gender}
-                            onChange={this.handleChange}/>
-                            <input 
-                            type="text"
-                            id="PhoneNumber"
-                            className="form-control"
-                            name="phone_number"
-                            placeholder="PhoneNumber"
-                            value={this.state.defaultDriver.phone_number}
-                            onChange={this.handleChange}/>
-                            <input 
-                            type="text"
-                            id="LicenseGrade"
-                            className="form-control"
-                            name="grade"
-                            placeholder="License grade"
-                            value={this.state.defaultDriver.license.grade}
-                            onChange={this.handleChangeStruct}/>
-                            <input 
-                            type="text"
-                            id="LicenseNumber"
-                            className="form-control"
-                            name="number"
-                            placeholder="License number"
-                            value={this.state.defaultDriver.license.number}
-                            onChange={this.handleChangeStruct}/>
-                            {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
-                            <button
-                            type="button"
-                            className="btn btn-success"
-                            onClick={() => {
-                                if (this.state.defaultDriver.id) {
-                                  this.handleSubmitUpdateForm();
-                                } else {
-                                  this.handleSubmitCreateForm();
-                                }
-                              }}
-                            >
-                                Save
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={this.handleClose}
-                            >
-                                Cancel
-                            </button>
+                    <div className="flex items-center mb-4">
+
+                    {userRole === 'admin' && (
+                        <button 
+                        type="button" 
+                        className="btn btn-primary mr-4" 
+                        onClick={this.toggleAddDriverForm}>
+                            <UserAddIcon className="h-6 w-7 text-blue-200" />
+                        </button>
+                    )}
+                    <div className="w-full relative flex-grow">
+                        <input 
+                            type="text" 
+                            value={this.state.searchStr} 
+                            placeholder="Search by name or ID number..." 
+                            onChange={this.handleInput} 
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <SearchIcon className="h-5 w-5 text-gray-400" />
                         </div>
                     </div>
+                    </div>
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                            <th scope="col" className="px-6 py-3 text-center">No.</th>
+                            <th scope="col" className="px-6 py-3 text-center">Name</th>
+                            <th scope="col" className="px-6 py-3 text-center">ID number</th>
+                            <th scope="col" className="px-6 py-3 text-center">Date of Birth</th>  
+                            <th scope="col" className="px-6 py-3 text-center">Gender</th>  
+                            <th scope="col" className="px-6 py-3 text-center">Phone Number</th>  
+                            <th scope="col" className="px-6 py-3 text-center">License</th>  
+                            <th scope="col" className="px-6 py-3 text-center">Status</th>  
+                            <th scope="col" className="px-6 py-3 text-center"></th>
+                            </tr>
+                        </thead>
+                        {this.state.drivers.map((driver, index) => (
+                            <tr key={driver.id} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
+                                <td className="p-3 pr-0 text-center">{index + 1}</td>
+                                <td className="p-3 pr-0 text-center ">{driver.name}</td>
+                                <td className="p-3 pr-0 text-center">{driver.id_number}</td>
+                                <td className="p-3 pr-0 text-center">{driver.dob}</td>
+                                <td className="p-3 pr-0 text-center">{driver.gender}</td>
+                                <td className="p-3 pr-0 text-center">{driver.phone_number}</td>
+                                <td className="p-3 pr-0 text-center" >{driver.license.grade} - {driver.license.number}</td>
+                                <td className="p-3 pr-0 text-center">{this.checkDriverStatus(driver.id)}</td>
+                                <td className="p-3 pr-0">
+                                <button
+                                    type="button"
+                                    className="h-5 w-5 text-yellow-400 mr-1"
+                                    onClick={() => {
+                                    this.handleEdit(driver);
+                                    }}
+                                >
+                                    <PencilIcon className="h-5 w-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    className="h-5 w-5 text-red-400 mr-1"
+                                    onClick={() => {
+                                    this.handleDelete(driver.id);
+                                    }}
+                                >
+                                    <TrashIcon className="h-5 w-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    className=""
+                                    onClick={() => this.showDrivingHistory(driver.id)}
+                                    >
+                                    <ClockIcon className="h-5 w-5" />
+                                </button>
+                                </td>
+                            </tr>
+                            ))}
+                    </table>
+                    </div>
+                </div>
+                {this.state.isShowAddingorEdittingTable && (
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+                      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                      </div>
+                      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                          <div className="sm:flex sm:items-start">
+                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                              <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-title">
+                                Add new driver
+                              </h3>
+                              <div className="mt-2">
+                                <input type="text" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="name" value={this.state.defaultDriver.name} onChange={this.handleChange} />
+                                <input type="text" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="id_number" value={this.state.defaultDriver.id_number} onChange={this.handleChange} />
+                                <input type="date" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="dob" value={this.state.defaultDriver.dob} onChange={this.handleChange} />
+                                <input type="text" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="gender" value={this.state.defaultDriver.gender} onChange={this.handleChange} />
+                                <input type="text" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="phone_number" value={this.state.defaultDriver.phone_number} onChange={this.handleChange} />
+                                <input type="text" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="grade" value={this.state.defaultDriver.license.grade} onChange={this.handleChangeStruct} />
+                                <input type="text" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="number" value={this.state.defaultDriver.license.number} onChange={this.handleChangeStruct} />
+                                {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                          <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.defaultDriver.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
+                          <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={this.handleClose}>Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 {this.state.isShowingHistory && (
                     <div className="popup">
