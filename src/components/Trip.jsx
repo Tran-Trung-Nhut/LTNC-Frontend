@@ -10,9 +10,9 @@ const Trip = () => {
     departureTime: "",
     departureLocation: "",
     arrivalLocation: "",
-    estimatedArrivalTime: "",
     currentStatus: "Chưa hoàn thành",
     driverID: "",
+    vehicle: "" // Thêm trường vehicle cho loại xe
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingTrip, setIsAddingTrip] = useState(false);
@@ -39,10 +39,12 @@ const Trip = () => {
       "TP Hồ Chí Minh", "Trà Vinh", "Vĩnh Long", "Tiền Giang"
     ] }
   ]);
+  const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
 
   useEffect(() => {
     fetchTrips();
     fetchDrivers();
+    fetchVehicles(); // Gọi hàm fetch danh sách các loại xe
   }, []);
 
   useEffect(() => {
@@ -77,6 +79,17 @@ const Trip = () => {
       });
   }
 
+  const fetchVehicles = () => {
+    axios.get("http://localhost:8000/Vehicle/list")
+      .then(res => {
+        setVehicles(res.data);
+      })
+      .catch(error => {
+        console.error("Error fetching vehicles:", error);
+        alert("Failed to fetch vehicles. Please try again later.");
+      });
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTrip(prevState => ({
@@ -94,23 +107,44 @@ const Trip = () => {
   }
 
   const handleSubmit = () => {
-    axios.post("http://localhost:8000/Trip/add", newTrip)
+    // Kiểm tra xem có phải đang chỉnh sửa chuyến đi hay không
+    const isEditing = !!newTrip.tripID;
+
+    // Nếu không phải đang chỉnh sửa và tài xế đã tồn tại chuyến đi chưa hoàn thành
+    if (!isEditing && trips.some(trip => trip.driverID === newTrip.driverID && trip.currentStatus === "Chưa hoàn thành")) {
+      alert("Tài xế đang bận, hãy chọn tài xế khác!");
+      return;
+    }
+
+    // Tiếp tục thêm chuyến đi mới hoặc cập nhật chuyến đi đã lưu
+    const estimatedArrivalTime = new Date(newTrip.departureTime);
+    estimatedArrivalTime.setDate(estimatedArrivalTime.getDate() + 1.5);
+    estimatedArrivalTime.setHours(Math.round(estimatedArrivalTime.getHours()));
+
+    const newTripData = {
+      ...newTrip,
+      estimatedArrivalTime: estimatedArrivalTime.toISOString(),
+    };
+
+    const saveAction = isEditing ? axios.put(`http://localhost:8000/Trip/update/${newTrip.tripID}`, newTripData) : axios.post("http://localhost:8000/Trip/add", newTripData);
+
+    saveAction
       .then(res => {
-        console.log("Trip added successfully:", res.data);
+        console.log(isEditing ? "Trip updated successfully:" : "Trip added successfully:", res.data);
         fetchTrips();
         setNewTrip({
           departureTime: "",
           departureLocation: "",
           arrivalLocation: "",
-          estimatedArrivalTime: "",
           currentStatus: "Chưa hoàn thành",
           driverID: "",
+          vehicle: "" // Reset trường vehicle sau khi thêm chuyến đi thành công
         });
         setIsAddingTrip(false);
       })
       .catch(error => {
-        console.error("Error adding trip:", error);
-        alert("Failed to add trip. Please try again later.");
+        console.error("Error saving trip:", error);
+        alert(`Failed to ${isEditing ? "update" : "add"} trip. Please try again later.`);
       });
   }
 
@@ -162,65 +196,76 @@ const Trip = () => {
 
   return (
     <div className="trip-container">
-      <h1 className="trip-heading">List of Trips</h1>
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-      </div>
-      <table className="trip-table">
-        <thead>
-          <tr>
-            <th>Departure Location</th>
-            <th>Arrival Location</th>
-            <th>Departure Time</th>
-            <th>Estimated Arrival Time</th>
-            <th>Actual Arrival Time</th>
-            <th>Driver Name</th>
-            <th>Current Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trips.filter(trip => {
-            if (searchTerm === "") {
-              return trip;
-            } else if (
-              trip.departureTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.departureLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.arrivalLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.estimatedArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.actualArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              trip.currentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return trip;
-            }
-            return null;
-          }).map(trip => (
-            <tr key={trip.tripID}>
-              <td>{trip.departureLocation}</td>
-              <td>{trip.arrivalLocation}</td>
-              <td>{new Date(trip.departureTime).toLocaleString()}</td>
-              <td>{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
-              <td>{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
-              <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
-              <td>{trip.currentStatus}</td>
-              <td>
-                <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
-                <button className="delete-btn" onClick={() => handleDelete(trip.tripID)}>Delete</button>
-                {trip.currentStatus !== "Đã hoàn thành" && (
-                  <button className="mark-btn" onClick={() => markCompleted(trip.tripID)}>Mark Completed</button>
-                )}
-              </td>
+      <div>
+        <h1 className="trip-heading">List of Trips</h1>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+        <table className="trip-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Departure Location</th>
+              <th>Arrival Location</th>
+              <th>Departure Time</th>
+              <th>Estimated Arrival Time</th>
+              <th>Actual Arrival Time</th>
+              <th>Driver Name</th>
+              <th>Vehicle</th>
+              <th>Current Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {trips.filter(trip => {
+              const searchTermLower = searchTerm.toLowerCase();
+              const departureTimeLower = new Date(trip.departureTime).toLocaleString().toLowerCase();
+              const departureLocationLower = trip.departureLocation.toLowerCase();
+              const arrivalLocationLower = trip.arrivalLocation.toLowerCase();
+              const estimatedArrivalTimeLower = new Date(trip.estimatedArrivalTime).toLocaleString().toLowerCase();
+              const actualArrivalTimeLower = trip.actualArrivalTime ? new Date(trip.actualArrivalTime).toLocaleString().toLowerCase() : "-";
+              const driverNameLower = drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase();
+              const currentStatusLower = trip.currentStatus.toLowerCase();
+              
+              return (
+                searchTermLower === "" ||
+                departureTimeLower.includes(searchTermLower) ||
+                departureLocationLower.includes(searchTermLower) ||
+                arrivalLocationLower.includes(searchTermLower) ||
+                estimatedArrivalTimeLower.includes(searchTermLower) ||
+                actualArrivalTimeLower.includes(searchTermLower) ||
+                driverNameLower?.includes(searchTermLower) ||
+                currentStatusLower.includes(searchTermLower)
+              );
+            }).map((trip, index) => (
+              <tr key={trip.tripID}>
+                <td>{index + 1}</td>
+                <td>{trip.departureLocation}</td>
+                <td>{trip.arrivalLocation}</td>
+                <td>{new Date(trip.departureTime).toLocaleString()}</td>
+                <td>{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
+                <td>{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
+                <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
+                <td>{trip.vehicle}</td>
+                <td>{trip.currentStatus}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
+                  <button className="delete-btn" onClick={() => handleDelete(trip.tripID)}>Delete</button>
+                  {trip.currentStatus !== "Đã hoàn thành" && (
+                    <button className="mark-btn" onClick={() => markCompleted(trip.tripID)}>Mark Completed</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="add-trip-form">
         {isAddingTrip && (
           <div className="form-group">
@@ -243,9 +288,15 @@ const Trip = () => {
                 <option key={location} value={location}>{location}</option>
               ))}
             </select>
-            <input type="datetime-local" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} onChange={handleInputChange} />
-            {/* Remove Actual Arrival Time field when adding new trip */}
-            {/* <input type="datetime-local" name="actualArrivalTime" value={newTrip.actualArrivalTime} onChange={handleInputChange} /> */}
+            {/* Thêm phần chọn loại xe */}
+            <select name="vehicle" value={newTrip.vehicle} onChange={handleInputChange}>
+              <option value="">Select Vehicle Type</option>
+              {vehicles.map(vehicle => (
+                <option key={vehicle.type} value={vehicle.type}>{vehicle.type}</option>
+              ))}
+            </select>
+            {/* Removed the Estimated Arrival Time input field */}
+            <input type="hidden" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} />
             <select name="driverID" value={newTrip.driverID} onChange={handleInputChange}>
               <option value="">Select Driver</option>
               {drivers.map(driver => (
