@@ -3,6 +3,7 @@ import axios from "axios";
 import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
+import { PencilIcon, TrashIcon, CheckCircleIcon, UserAddIcon, SearchIcon } from '@heroicons/react/outline';
 const Trip = () => {
   const {isLoggedIn, password, userRole} = useContext(AuthContext)
   const [trips, setTrips] = useState([]);
@@ -12,9 +13,9 @@ const Trip = () => {
     departureTime: "",
     departureLocation: "",
     arrivalLocation: "",
-    estimatedArrivalTime: "",
     currentStatus: "Chưa hoàn thành",
     driverID: "",
+    vehicle: "" // Thêm trường vehicle cho loại xe
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingTrip, setIsAddingTrip] = useState(false);
@@ -41,10 +42,12 @@ const Trip = () => {
       "TP Hồ Chí Minh", "Trà Vinh", "Vĩnh Long", "Tiền Giang"
     ] }
   ]);
+  const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
 
   useEffect(() => {
     fetchTrips();
     fetchDrivers();
+    fetchVehicles(); // Gọi hàm fetch danh sách các loại xe
   }, []);
 
   useEffect(() => {
@@ -79,6 +82,17 @@ const Trip = () => {
       });
   }
 
+  const fetchVehicles = () => {
+    axios.get("http://localhost:8000/Vehicle/list")
+      .then(res => {
+        setVehicles(res.data);
+      })
+      .catch(error => {
+        console.error("Error fetching vehicles:", error);
+        alert("Failed to fetch vehicles. Please try again later.");
+      });
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTrip(prevState => ({
@@ -96,23 +110,44 @@ const Trip = () => {
   }
 
   const handleSubmit = () => {
-    axios.post("http://localhost:8000/Trip/add", newTrip)
+    // Kiểm tra xem có phải đang chỉnh sửa chuyến đi hay không
+    const isEditing = !!newTrip.tripID;
+
+    // Nếu không phải đang chỉnh sửa và tài xế đã tồn tại chuyến đi chưa hoàn thành
+    if (!isEditing && trips.some(trip => trip.driverID === newTrip.driverID && trip.currentStatus === "Chưa hoàn thành")) {
+      alert("Tài xế đang bận, hãy chọn tài xế khác!");
+      return;
+    }
+
+    // Tiếp tục thêm chuyến đi mới hoặc cập nhật chuyến đi đã lưu
+    const estimatedArrivalTime = new Date(newTrip.departureTime);
+    estimatedArrivalTime.setDate(estimatedArrivalTime.getDate() + 1.5);
+    estimatedArrivalTime.setHours(Math.round(estimatedArrivalTime.getHours()));
+
+    const newTripData = {
+      ...newTrip,
+      estimatedArrivalTime: estimatedArrivalTime.toISOString(),
+    };
+
+    const saveAction = isEditing ? axios.put(`http://localhost:8000/Trip/update/${newTrip.tripID}`, newTripData) : axios.post("http://localhost:8000/Trip/add", newTripData);
+
+    saveAction
       .then(res => {
-        console.log("Trip added successfully:", res.data);
+        console.log(isEditing ? "Trip updated successfully:" : "Trip added successfully:", res.data);
         fetchTrips();
         setNewTrip({
           departureTime: "",
           departureLocation: "",
           arrivalLocation: "",
-          estimatedArrivalTime: "",
           currentStatus: "Chưa hoàn thành",
           driverID: "",
+          vehicle: "" // Reset trường vehicle sau khi thêm chuyến đi thành công
         });
         setIsAddingTrip(false);
       })
       .catch(error => {
-        console.error("Error adding trip:", error);
-        alert("Failed to add trip. Please try again later.");
+        console.error("Error saving trip:", error);
+        alert(`Failed to ${isEditing ? "update" : "add"} trip. Please try again later.`);
       });
   }
 
@@ -165,108 +200,159 @@ const Trip = () => {
     return(<Login></Login>)
   }else{
 
-    return (
-      <div className="trip-container">
-        <h1 className="trip-heading">List of Trips</h1>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-        <table className="trip-table">
-          <thead>
+  return (
+    <div>
+        <h1 className="Driver" >List of Driver</h1>
+        <div className="container">
+            <div className="flex items-center mb-4">
+            {userRole === 'admin' &&(
+              
+               <button 
+                type="button" 
+                className="btn btn-primary mr-4" 
+                onClick={() => setIsAddingTrip(true)}>
+                    <UserAddIcon className="h-6 w-7 text-blue-200" />
+                </button>
+            )}
+            <div className="w-full relative flex-grow">
+                <input 
+                    type="text" 
+                    placeholder="Search..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none" >
+                    <SearchIcon className="h-5 w-5 text-gray-400" />
+                </div>
+            </div>
+            </div>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th>Departure Location</th>
-              <th>Arrival Location</th>
-              <th>Departure Time</th>
-              <th>Estimated Arrival Time</th>
-              <th>Actual Arrival Time</th>
-              <th>Driver Name</th>
-              <th>Current Status</th>
-              <th>Action</th>
+              <th scope="col" className="px-6 py-3 text-center">No.</th>
+              <th scope="col" className="px-6 py-3 text-center">Departure Location</th>
+              <th scope="col" className="px-6 py-3 text-center">Arrival Location</th>
+              <th scope="col" className="px-6 py-3 text-center">Departure Time</th>
+              <th scope="col" className="px-6 py-3 text-center">Estimated Arrival Time</th>
+              <th scope="col" className="px-6 py-3 text-center">Actual Arrival Time</th>
+              <th scope="col" className="px-6 py-3 text-center">Driver Name</th>
+              <th scope="col" className="px-6 py-3 text-center">Vehicle</th>
+              <th scope="col" className="px-6 py-3 text-center">Current Status</th>
+              <th scope="col" className="px-6 py-3 text-center"></th>
             </tr>
           </thead>
           <tbody>
             {trips.filter(trip => {
-              if (searchTerm === "") {
-                return trip;
-              } else if (
-                trip.departureTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                trip.departureLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                trip.arrivalLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                trip.estimatedArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                trip.actualArrivalTime.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                trip.currentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase().includes(searchTerm.toLowerCase())
-              ) {
-                return trip;
-              }
-              return null;
-            }).map(trip => (
-              <tr key={trip.tripID}>
-                <td>{trip.departureLocation}</td>
-                <td>{trip.arrivalLocation}</td>
-                <td>{new Date(trip.departureTime).toLocaleString()}</td>
-                <td>{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
-                <td>{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
-                <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
-                <td>{trip.currentStatus}</td>
+              const searchTermLower = searchTerm.toLowerCase();
+              const departureTimeLower = new Date(trip.departureTime).toLocaleString().toLowerCase();
+              const departureLocationLower = trip.departureLocation.toLowerCase();
+              const arrivalLocationLower = trip.arrivalLocation.toLowerCase();
+              const estimatedArrivalTimeLower = new Date(trip.estimatedArrivalTime).toLocaleString().toLowerCase();
+              const actualArrivalTimeLower = trip.actualArrivalTime ? new Date(trip.actualArrivalTime).toLocaleString().toLowerCase() : "-";
+              const driverNameLower = drivers.find(driver => driver.id === trip.driverID)?.name.toLowerCase();
+              const currentStatusLower = trip.currentStatus.toLowerCase();
+              
+              return (
+                searchTermLower === "" ||
+                departureTimeLower.includes(searchTermLower) ||
+                departureLocationLower.includes(searchTermLower) ||
+                arrivalLocationLower.includes(searchTermLower) ||
+                estimatedArrivalTimeLower.includes(searchTermLower) ||
+                actualArrivalTimeLower.includes(searchTermLower) ||
+                driverNameLower?.includes(searchTermLower) ||
+                currentStatusLower.includes(searchTermLower)
+              );
+            }).map((trip, index) => (
+              <tr key={trip.tripID} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
+                <td className="p-3 pr-0 text-center">{index + 1}</td>
+                <td className="p-3 pr-0 text-center">{trip.departureLocation}</td>
+                <td className="p-3 pr-0 text-center">{trip.arrivalLocation}</td>
+                <td className="p-3 pr-0 text-center">{new Date(trip.departureTime).toLocaleString()}</td>
+                <td className="p-3 pr-0 text-center">{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
+                <td className="p-3 pr-0 text-center">{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
+                <td className="p-3 pr-0 text-center">{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
+                <td className="p-3 pr-0 text-center">{trip.vehicle}</td>
+                <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(trip.tripID)}>Delete</button>
+                  <button className="h-5 w-5 text-yellow-400 mr-1" onClick={() => handleEdit(trip)}><PencilIcon className="h-5 w-5"/></button>
+                  <button className="h-5 w-5 text-red-400 mr-1" onClick={() => handleDelete(trip.tripID)}><TrashIcon className="h-5 w-5"/></button>
                   {trip.currentStatus !== "Đã hoàn thành" && (
-                    <button className="mark-btn" onClick={() => markCompleted(trip.tripID)}>Mark Completed</button>
+                    <button className="h-5 w-5 text-grey-400 mr-1" onClick={() => markCompleted(trip.tripID)}><CheckCircleIcon className="h-5 w-5"/></button>
                   )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="add-trip-form">
-          {isAddingTrip && (
-            <div className="form-group">
-              <input type="datetime-local" name="departureTime" value={newTrip.departureTime} onChange={handleInputChange} />
-              <select name="departureLocation" value={newTrip.departureLocation} onChange={handleInputChange}>
+        </div>
+      </div>
+      <div className="add-trip-form">
+        {isAddingTrip && (
+          <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-title">
+                      Add new driver
+                    </h3>
+                    <div className="mt-2">
+              <input type="datetime-local" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="departureTime" value={newTrip.departureTime} onChange={handleInputChange} />
+              <select name="departureLocation" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.departureLocation} onChange={handleInputChange}>
                 <option value="">Select Departure Location</option>
                 <option value="Hà Nội">Hà Nội</option>
                 <option value="Đà Nẵng">Đà Nẵng</option>
                 <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
               </select>
-              <select name="arrivalRegion" value={selectedRegion} onChange={handleRegionChange}>
+              <select name="arrivalRegion" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={selectedRegion} onChange={handleRegionChange}>
                 <option value="">Select Arrival Region</option>
                 {regions.map(region => (
                   <option key={region.name} value={region.name}>{region.name}</option>
                 ))}
               </select>
-              <select name="arrivalLocation" value={newTrip.arrivalLocation} onChange={handleInputChange}>
+              <select name="arrivalLocation" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.arrivalLocation} onChange={handleInputChange}>
                 <option value="">Select Arrival Location</option>
                 {arrivalLocations.map(location => (
                   <option key={location} value={location}>{location}</option>
                 ))}
               </select>
-              <input type="datetime-local" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} onChange={handleInputChange} />
-              {/* Remove Actual Arrival Time field when adding new trip */}
-              {/* <input type="datetime-local" name="actualArrivalTime" value={newTrip.actualArrivalTime} onChange={handleInputChange} /> */}
-              <select name="driverID" value={newTrip.driverID} onChange={handleInputChange}>
+              {/* Thêm phần chọn loại xe */}
+              <select name="vehicle" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.vehicle} onChange={handleInputChange}>
+                <option value="">Select Vehicle Type</option>
+                {vehicles.map(vehicle => (
+                  <option key={vehicle.type} value={vehicle.type}>{vehicle.type}</option>
+                ))}
+              </select>
+              {/* Removed the Estimated Arrival Time input field */}
+              <input type="hidden" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} />
+              <select name="driverID" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.driverID} onChange={handleInputChange}>
                 <option value="">Select Driver</option>
                 {drivers.map(driver => (
                   <option key={driver.id} value={driver.id}>{driver.name}</option>
                 ))}
               </select>
-              <button className="submit-btn" onClick={handleSubmit}>Save</button>
-              <button className="cancel-btn" onClick={() => setIsAddingTrip(false)}>Cancel</button>
+              </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={handleSubmit}>Save</button>
+                <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={()=>setIsAddingTrip(false)}>Cancel</button>
+              </div>
             </div>
-          )}
-          {!isAddingTrip && (
-            <button className="add-btn" onClick={() => setIsAddingTrip(true)}>Add Trip</button>
-          )}
+          </div>
         </div>
+        )}
       </div>
-    );}
+    </div>
+  );
 }
-
+}
 export default Trip;
