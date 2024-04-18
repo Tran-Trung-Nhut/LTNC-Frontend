@@ -1,3 +1,21 @@
 h1 {
     text-align: center;
 }
+
+.Text {
+    position: absolute;
+    z-index: 1;
+    top: 50%; 
+    left: 100px ;
+    color: white; 
+    font-size: 100px; 
+    font-weight: 800; 
+}
+
+.wrapper {
+    background-repeat: repeat-y; 
+    background-size: cover; 
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh; /* Đảm bảo rằng nền sẽ trải đều trên toàn bộ kích thước màn hình */
+  }

@@ -4,6 +4,9 @@ import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
 import { PencilIcon, TrashIcon, CheckCircleIcon, UserAddIcon, SearchIcon } from '@heroicons/react/outline';
+import Background from "../image/logo.jpg";
+
+
 const Trip = () => {
   const {isLoggedIn, password, userRole} = useContext(AuthContext)
   const [trips, setTrips] = useState([]);
@@ -202,28 +205,28 @@ const Trip = () => {
 
   return (
     <div>
-        <h1 className="Driver" >List of Driver</h1>
+        <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
         <div className="container">
             <div className="flex items-center mb-4">
             {userRole === 'admin' &&(
               
                <button 
                 type="button" 
-                className="btn btn-primary mr-4" 
+                className="btn btn-primary mr-4 mt-24" 
                 onClick={() => setIsAddingTrip(true)}>
                     <UserAddIcon className="h-6 w-7 text-blue-200" />
                 </button>
             )}
-            <div className="w-full relative flex-grow">
+            <div className="w-full relative flex-grow mt-20">
                 <input 
                     type="text" 
                     placeholder="Search..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                    className="mt-5 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none" >
-                    <SearchIcon className="h-5 w-5 text-gray-400" />
+                    <SearchIcon className="h-5 w-5 text-gray-400 mt-5" />
                 </div>
             </div>
             </div>
@@ -277,7 +280,9 @@ const Trip = () => {
                 <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
                 <td>
                   <button className="h-5 w-5 text-yellow-400 mr-1" onClick={() => handleEdit(trip)}><PencilIcon className="h-5 w-5"/></button>
+                {userRole === "admin" && (  
                   <button className="h-5 w-5 text-red-400 mr-1" onClick={() => handleDelete(trip.tripID)}><TrashIcon className="h-5 w-5"/></button>
+                )} 
                   {trip.currentStatus !== "Đã hoàn thành" && (
                     <button className="h-5 w-5 text-grey-400 mr-1" onClick={() => markCompleted(trip.tripID)}><CheckCircleIcon className="h-5 w-5"/></button>
                   )}
@@ -350,6 +355,7 @@ const Trip = () => {
           </div>
         </div>
         )}
+      </div>
       </div>
     </div>
   );

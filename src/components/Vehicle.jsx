@@ -3,7 +3,8 @@ import axios from "axios"; // uimport axios
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
 import { PencilIcon, TrashIcon, TruckIcon } from '@heroicons/react/outline';
-
+import Background from "../image/logo.jpg";
+import "./css/Vehicle.css"
 
 const defaultFormData = {
   id: undefined,
@@ -161,16 +162,18 @@ class Vehicle extends React.Component {
     return (
       <>
       {isLoggedIn && (<div className="App">
-        <h1 className="Vehicle">List of Vehicle</h1>
+      <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
         <div className="container">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={this.handleOpenVehicleForm}
-          >
-            <TruckIcon className="h-6 w-10 text-blue-200" />
-          </button>
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <div className="">
+            <button
+              type="button"
+              className="btn btn-primary mt-24"
+              onClick={this.handleOpenVehicleForm}
+            >
+              <TruckIcon className="h-6 w-10 text-blue-200 mt-0"/>
+            </button>
+          </div>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" align="center">
             <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -192,24 +195,29 @@ class Vehicle extends React.Component {
                 <td className="p-3 pr-0 text-center">{vehicle.capacity}</td>
                 <td className="p-3 pr-0 text-center">{vehicle.status}</td>
                 <td>
-                  <button
-                    type="button"
-                    className="h-5 w-5 mr-2"
-                    onClick={() => {
-                      this.handleEdit(vehicle);
-                    }}
-                  >
-                    <PencilIcon className="h-5 w-5 text-yellow-400"/>
-                  </button>
-                  <button
-                    type="button"
-                    className="h-5 w-5 mr-2"
-                    onClick={() => {
-                      this.handleDelete(vehicle.id);
-                    }}
-                  >
-                    <TrashIcon className="h-5 w-5 text-red-400"/>
-                  </button>
+
+                  {userRole === "admin" && (
+                    <>
+                    <button
+                      type="button"
+                      className="h-5 w-5 mr-2"
+                      onClick={() => {
+                        this.handleEdit(vehicle);
+                      }}
+                    >
+                      <PencilIcon className="h-5 w-5 text-yellow-400"/>
+                    </button>
+                    <button
+                      type="button"
+                      className="h-5 w-5 mr-2"
+                      onClick={() => {
+                        this.handleDelete(vehicle.id);
+                      }}
+                    >
+                      <TrashIcon className="h-5 w-5 text-red-400"/>
+                    </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
@@ -291,7 +299,7 @@ class Vehicle extends React.Component {
                           </div>
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                          <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.defaultDriver.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
+                          <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.formData.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
                           <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={this.handleCloseVehicleForm}>Cancel</button>
                         </div>
                       </div>
@@ -299,10 +307,11 @@ class Vehicle extends React.Component {
                   </div>
         )}
       </div>
-      )};
+      </div>
+      )}
       {!isLoggedIn && (<Login></Login>)}
       </>
-    );
+    )
   }
 }
 

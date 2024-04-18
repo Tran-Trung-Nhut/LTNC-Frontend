@@ -5,7 +5,7 @@ box-sizing: border-box;
 }
 
 .NavbarItems {
-  background-color: #fff;
+  background-color: transparent ;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,12 +18,11 @@ box-sizing: border-box;
   top: 20px;
   left: 35px;
   transform: translate ;
-  z-index: 10000;
-
+  z-index: 1;
 }
 
 .navbar-logo {
-  color: rgba(0, 0, 0, 0.2);
+  color: white;
   font-size: 2rem;
   cursor: pointer;
 
@@ -31,18 +30,20 @@ box-sizing: border-box;
 
 .nav-menu {
   display: flex;
+  color: white;
   align-items: center;
   padding-top: 13px;
 }
 
 .nav-menu li {
+  
   margin-right: 10px; 
   list-style: none;
 }
 
 .nav-menu a {
   text-decoration: none;
-  color: #333; 
+  color: white; 
   font-size: 1.2rem; 
   font-weight: 600;
   padding: 10px; 
