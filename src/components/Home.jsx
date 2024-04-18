@@ -3,25 +3,28 @@ import "./css/Home.css";
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
 import Footer from "../layout/Footer";
+import Background from "../image/logo.jpg";
 
 function Home() {
-    const { isLoggedIn } = useContext(AuthContext);
+    const {isLoggedIn} = useContext(AuthContext)
     return (
-            <div className="Homepage">
-                
-            {!isLoggedIn ? (
+        <>
+         {!isLoggedIn ? (
                 <Login/>
             ) : (
-                <>
-                    <h1>
-                        <img src={"https://img.lovepik.com/element/45004/6953.png_860.png"} alt="Logo" style={{ width: "70px", height: "70px" }} />
-                        DriveCare
+            <div className = "background">
+            <img src={Background} />
+
+                <div>
+                    <h1 className="Text">
+                        Driver Care
                     </h1>
-                </>
-            )}
-            <Footer className="Footer"/>
+                </div>
             </div>
+            )}
+        <Footer></Footer>
+        </>
     );
 }
 
-export default Home;
+export default Home; 
