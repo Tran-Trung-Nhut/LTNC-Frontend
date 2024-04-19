@@ -3,8 +3,9 @@ import axios from "axios";
 import "./css/Driver.css"
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
-import { PencilIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
+import { PencilIcon,ArrowLeftIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 const defaultFormDriver = {
     id: undefined,
@@ -48,6 +49,11 @@ class Driver extends React.Component {
             showUserInfor: true,
             isShowingHistory: false
         })
+    }
+
+    isExistIDNumber = (driverID) =>{
+        const foundID = this.state.drivers.find(driver => driver.id_number === driverID)
+        return foundID !== undefined
     }
 
     static contextType = AuthContext;
@@ -157,7 +163,7 @@ class Driver extends React.Component {
 
     handleSubmitCreateForm = () => {
         const name = document.getElementById("Name").value;
-        const id_number = document.getElementById("id_Number").value;
+        const id = document.getElementById("id_Number").value;
         const dob = document.getElementById("DateofBirth").value;
         const gender = document.getElementById("Gender").value;
         const phone_number = document.getElementById("PhoneNumber").value;
@@ -172,7 +178,7 @@ class Driver extends React.Component {
     
         const newDriver = {
             name: name,
-            id_number: id_number,
+            id_number: id,
             dob: dob,
             gender: gender,
             phone_number: phone_number,
@@ -182,14 +188,19 @@ class Driver extends React.Component {
 
         this.setState({defaultDriver:newDriver})
 
-        this.checkAllFieldsFilled();
-
         if (!this.checkAllFieldsFilled()) {
             this.showError("You have to fill in all fields");
             return;
         }else {
-            this.showError("");
+            if(this.isExistIDNumber(this.state.defaultDriver.id_number)){
+                this.showError("ID này đã tồn tại!")
+                return;
+            }else{
+                this.showError("")
+            }
         }
+
+        
     
         axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
             .then((response) => {
@@ -298,12 +309,12 @@ class Driver extends React.Component {
                             onChange={this.handleInput} 
                             className="block mt-28 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                         />
-                        <button type="button" className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-20 transform hover:scale-110">
-                            <SearchIcon className="h-8 w-8 text-gray-400 mt-6 " />
+                        <button type="button" className="absolute mt-20 inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-20 transform hover:scale-110">
+                            <SearchIcon className="h-5 w-5 text-gray-400 mt-4 " />
                         </button>
                     </div>
                     </div>
-                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
                     <table className="w-full mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
                             <tr>
@@ -400,8 +411,9 @@ class Driver extends React.Component {
                       <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
                           <div className="sm:flex sm:items-start">
-                            <div className="text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <div class="flex justify-end">
+                            <div className="text-center sm:text-left">
+                            <div class="flex justify-between">
+                            <button class="px-1 py-1 transform hover:scale-110 text-gray-500" onClick={this.CloseHistory}><ArrowLeftIcon className="h-5 w-5"/></button>
                             <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
                             </div>
                             <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

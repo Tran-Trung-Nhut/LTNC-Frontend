@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios"; // uimport axios
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { PencilIcon, TrashIcon, TruckIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon, TruckIcon,ArrowLeftIcon,ArrowRightIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
 import "./css/Vehicle.css"
 
@@ -27,7 +27,9 @@ class Vehicle extends React.Component {
       trips:[],
       isOpenVehicleForm: false,
       formData: defaultFormData,
-      error: ""
+      error: "",
+      currentPage: 1,
+      vehiclesPerPage: 10,
     };
   }
 
@@ -159,10 +161,15 @@ class Vehicle extends React.Component {
 
   render() {
     const { isLoggedIn, userRole, password } = this.context
+    const totalPages = Math.ceil(this.state.vehicles.length / this.state.vehiclesPerPage);
+
+    const indexOfLastVehicle = this.state.currentPage * this.state.vehiclesPerPage;
+    const indexOfFirstVehicle = indexOfLastVehicle - this.state.vehiclesPerPage;
+    const currentVehicles = this.state.vehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
     return (
       <>
       {isLoggedIn && (<div className="App">
-      <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
+      <div className="wrapper bg-cover" style={{backgroundImage: `url(${Background})`}}>
         <div className="container">
           <div className="">
             <button
@@ -173,55 +180,66 @@ class Vehicle extends React.Component {
               <TruckIcon className="h-6 w-10 text-blue-200 mt-0"/>
             </button>
           </div>
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" align="center">
-            <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-center">No.</th>
-                <th scope="col" className="px-6 py-3 text-center">Registered Number</th>
-                <th scope="col" className="px-6 py-3 text-center">Type</th>
-                <th scope="col" className="px-6 py-3 text-center">Size</th>
-                <th scope="col" className="px-6 py-3 text-center">Load Capacity</th>
-                <th scope="col" className="px-6 py-3 text-center">Status</th>
-                <th scope="col" className="px-6 py-3 text-center"></th>
-              </tr>
-            </thead>
-            {this.state.vehicles.map((vehicle, index) => (
-              <tr key={vehicle.id} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
-                <td className="p-3 pr-0 text-center">{index + 1}</td>
-                <td className="p-3 pr-0 text-center">{vehicle.registeredNumber}</td>
-                <td className="p-3 pr-0 text-center">{vehicle.type}</td>
-                <td className="p-3 pr-0 text-center">{vehicle.size.width} x {vehicle.size.height} x {vehicle.size.height}</td>
-                <td className="p-3 pr-0 text-center">{vehicle.capacity}</td>
-                <td className="p-3 pr-0 text-center">{vehicle.status}</td>
-                <td>
+          <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg   mt-3">
+          {totalPages > 1 && (
+            <div className="bg-white">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" align="center">
+              <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-center">No.</th>
+                  <th scope="col" className="px-6 py-3 text-center">Registered Number</th>
+                  <th scope="col" className="px-6 py-3 text-center">Type</th>
+                  <th scope="col" className="px-6 py-3 text-center">Size</th>
+                  <th scope="col" className="px-6 py-3 text-center">Load Capacity</th>
+                  <th scope="col" className="px-6 py-3 text-center">Status</th>
+                  <th scope="col" className="px-6 py-3 text-center"></th>
+                </tr>
+              </thead>
+              {currentVehicles.map((vehicle, index) => (
+                <tr key={vehicle.id} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
+                  <td className="p-3 pr-0 text-center">{index + 1 + (this.state.currentPage - 1) * this.state.vehiclesPerPage}</td>
+                  <td className="p-3 pr-0 text-center">{vehicle.registeredNumber}</td>
+                  <td className="p-3 pr-0 text-center">{vehicle.type}</td>
+                  <td className="p-3 pr-0 text-center">{vehicle.size.width} x {vehicle.size.height} x {vehicle.size.height}</td>
+                  <td className="p-3 pr-0 text-center">{vehicle.capacity}</td>
+                  <td className="p-3 pr-0 text-center">{vehicle.status}</td>
+                  <td>
 
-                  {userRole === "admin" && (
-                    <>
-                    <button
-                      type="button"
-                      className="h-5 w-5 mr-2"
-                      onClick={() => {
-                        this.handleEdit(vehicle);
-                      }}
-                    >
-                      <PencilIcon className="h-5 w-5 text-yellow-400"/>
-                    </button>
-                    <button
-                      type="button"
-                      className="h-5 w-5 mr-2"
-                      onClick={() => {
-                        this.handleDelete(vehicle.id);
-                      }}
-                    >
-                      <TrashIcon className="h-5 w-5 text-red-400"/>
-                    </button>
-                    </>
-                  )}
-                </td>
-              </tr>
+                    {userRole === "admin" && (
+                      <>
+                      <button
+                        type="button"
+                        className="h-5 w-5 mr-2"
+                        onClick={() => {
+                          this.handleEdit(vehicle);
+                        }}
+                      >
+                        <PencilIcon className="h-5 w-5 text-yellow-400"/>
+                      </button>
+                      <button
+                        type="button"
+                        className="h-5 w-5 mr-2"
+                        onClick={() => {
+                          this.handleDelete(vehicle.id);
+                        }}
+                      >
+                        <TrashIcon className="h-5 w-5 text-red-400"/>
+                      </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </table>
+            <div className="flex justify-center mt-1">
+            <button onClick={() => {if(this.state.currentPage !== 1){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowLeftIcon className="h-6 w-6"/></button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button className="border border-black-1000" key={i} onClick={() => this.setState({ currentPage: i + 1 })}>{i + 1}</button>
             ))}
-          </table>
+            <button onClick={() => this.setState({ currentPage: this.state.currentPage + 1 })}><ArrowRightIcon className="h-6 w-6"/></button>
+            </div>
+            </div>
+          )}
           </div>
         </div>
 

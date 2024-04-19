@@ -3,7 +3,7 @@ import axios from "axios";
 import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { PencilIcon, TrashIcon, CheckCircleIcon, UserAddIcon, SearchIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon, CheckCircleIcon, UserAddIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
 
 
@@ -46,6 +46,13 @@ const Trip = () => {
     ] }
   ]);
   const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tripsPerPage, setTripPerPage] = useState(10);
+
+  const totalPages = Math.ceil(trips.length / tripsPerPage);
+  const indexOfLastTrip = currentPage * tripsPerPage;
+  const indexOfFirstTrip = indexOfLastTrip - tripsPerPage;
+  const currentTrips = trips.slice(indexOfFirstTrip, indexOfLastTrip);
 
   useEffect(() => {
     fetchTrips();
@@ -230,7 +237,7 @@ const Trip = () => {
                 </div>
             </div>
             </div>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg bg-white">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -247,7 +254,7 @@ const Trip = () => {
             </tr>
           </thead>
           <tbody>
-            {trips.filter(trip => {
+            {currentTrips.filter(trip => {
               const searchTermLower = searchTerm.toLowerCase();
               const departureTimeLower = new Date(trip.departureTime).toLocaleString().toLowerCase();
               const departureLocationLower = trip.departureLocation.toLowerCase();
@@ -291,6 +298,23 @@ const Trip = () => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-center mt-1">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ArrowLeftIcon className="h-5 w-5"/>
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+              <button className="border border-black-1000" key={i} onClick={() => setCurrentPage( i + 1 )}>{i + 1}</button>
+            ))}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={indexOfLastTrip >= trips.length}
+          >
+            <ArrowRightIcon className="h-5 w-5"/>
+          </button>
+      </div>
         </div>
       </div>
       <div className="add-trip-form">

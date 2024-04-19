@@ -32,7 +32,7 @@ function Login(){
     }
 
     return (
-    <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
+    <div className="wrapper bg-cover bg-repeat-y z-2" style={{backgroundImage: `url(${Background})`}}>
         <div className="login">Login
             <div>
                 <input type="text" value={username} placeholder="Username" onChange={(e) => setUsername(e.target.value)}/>
