@@ -181,7 +181,7 @@ class Vehicle extends React.Component {
             </button>
           </div>
           <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg   mt-3">
-          {totalPages > 1 && (
+          {totalPages >= 1 && (
             <div className="bg-white">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" align="center">
               <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -236,7 +236,7 @@ class Vehicle extends React.Component {
             {Array.from({ length: totalPages }, (_, i) => (
               <button className="border border-black-1000" key={i} onClick={() => this.setState({ currentPage: i + 1 })}>{i + 1}</button>
             ))}
-            <button onClick={() => this.setState({ currentPage: this.state.currentPage + 1 })}><ArrowRightIcon className="h-6 w-6"/></button>
+            <button onClick={() => {if(this.state.currentPage < totalPages){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowRightIcon className="h-6 w-6"/></button>
             </div>
             </div>
           )}

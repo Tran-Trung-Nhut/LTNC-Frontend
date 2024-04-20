@@ -61,7 +61,7 @@ function Header() {
           Trip
           </Link>
         </li>
-        {!isLoggedIn && (<button>Sign up</button>)}
+        {!isLoggedIn && (<button type="button" >Sign up</button>)}
         {isLoggedIn && (
         <button type="button" className="flex border transform hover:scale-110" onClick={showInformation}>
           <UserCircleIcon className="h-5 w-5 mr-1"/>

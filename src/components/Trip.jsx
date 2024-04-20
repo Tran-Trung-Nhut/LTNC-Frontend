@@ -3,7 +3,7 @@ import axios from "axios";
 import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { PencilIcon, TrashIcon, CheckCircleIcon, UserAddIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon, CheckCircleIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon, MapIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
 
 
@@ -48,6 +48,8 @@ const Trip = () => {
   const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
   const [currentPage, setCurrentPage] = useState(1);
   const [tripsPerPage, setTripPerPage] = useState(10);
+  const [showTripInfo, setShowTrip] = useState(false)
+  const [tripShow, setTripShow] = useState()
 
   const totalPages = Math.ceil(trips.length / tripsPerPage);
   const indexOfLastTrip = currentPage * tripsPerPage;
@@ -79,6 +81,11 @@ const Trip = () => {
         console.error("Error fetching trips:", error);
         alert("Failed to fetch trips. Please try again later.");
       });
+  }
+
+  const showInfo = (tripID) =>{
+    setShowTrip(true);
+    setTripShow(trips.find(trip => trip.tripID === tripID));
   }
 
   const fetchDrivers = () => {
@@ -117,6 +124,11 @@ const Trip = () => {
       ...prevState,
       arrivalLocation: ""
     }));
+  }
+
+  const handleClose = () =>{
+    setShowTrip(false);
+    setShowTrip()
   }
 
   const handleSubmit = () => {
@@ -221,7 +233,7 @@ const Trip = () => {
                 type="button" 
                 className="btn btn-primary mr-4 mt-24" 
                 onClick={() => setIsAddingTrip(true)}>
-                    <UserAddIcon className="h-6 w-7 text-blue-200" />
+                    <MapIcon className="h-6 w-7 text-blue-200" />
                 </button>
             )}
             <div className="w-full relative flex-grow mt-20">
@@ -244,9 +256,6 @@ const Trip = () => {
               <th scope="col" className="px-6 py-3 text-center">No.</th>
               <th scope="col" className="px-6 py-3 text-center">Departure Location</th>
               <th scope="col" className="px-6 py-3 text-center">Arrival Location</th>
-              <th scope="col" className="px-6 py-3 text-center">Departure Time</th>
-              <th scope="col" className="px-6 py-3 text-center">Estimated Arrival Time</th>
-              <th scope="col" className="px-6 py-3 text-center">Actual Arrival Time</th>
               <th scope="col" className="px-6 py-3 text-center">Driver Name</th>
               <th scope="col" className="px-6 py-3 text-center">Vehicle</th>
               <th scope="col" className="px-6 py-3 text-center">Current Status</th>
@@ -279,9 +288,6 @@ const Trip = () => {
                 <td className="p-3 pr-0 text-center">{index + 1}</td>
                 <td className="p-3 pr-0 text-center">{trip.departureLocation}</td>
                 <td className="p-3 pr-0 text-center">{trip.arrivalLocation}</td>
-                <td className="p-3 pr-0 text-center">{new Date(trip.departureTime).toLocaleString()}</td>
-                <td className="p-3 pr-0 text-center">{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
-                <td className="p-3 pr-0 text-center">{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
                 <td className="p-3 pr-0 text-center">{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
                 <td className="p-3 pr-0 text-center">{trip.vehicle}</td>
                 <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
@@ -290,6 +296,7 @@ const Trip = () => {
                 {userRole === "admin" && (  
                   <button className="h-5 w-5 text-red-400 mr-1" onClick={() => handleDelete(trip.tripID)}><TrashIcon className="h-5 w-5"/></button>
                 )} 
+                <button className="h-5 w-5 text-gray-400 mr-1" ><InformationCircleIcon className="h-5 w-5" onClick={()=>showInfo(trip.tripID)}/></button>
                   {trip.currentStatus !== "Đã hoàn thành" && (
                     <button className="h-5 w-5 text-grey-400 mr-1" onClick={() => markCompleted(trip.tripID)}><CheckCircleIcon className="h-5 w-5"/></button>
                   )}
@@ -381,6 +388,99 @@ const Trip = () => {
         )}
       </div>
       </div>
+      {showTripInfo && (
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+                  <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                  </div>
+                  <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                  <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                      <div className="sm:flex sm:items-start">
+                        <div className="mt-0 h-full w-full text-center sm:text-left">
+                            <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg h-full w-full">
+                            <div class="flex justify-end mt-2">
+                                <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={() => handleClose()}><XIcon className="h-5 w-5"/></button>
+                            </div>
+                                <div class="px-4 py-5 sm:px-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                        Trip database
+                                    </h3>
+                                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                                        Details and informations about trip.
+                                    </p>
+                                </div>
+                                <div class="border-t border-gray-200">
+                                    <dl>
+                                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                            Departure Location
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {tripShow.departureLocation}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Arrival Location
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {tripShow.arrivalLocation}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                            Departure Time
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {new Date(tripShow.departureTime).toLocaleString()}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Estimated arrival time
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {new Date(tripShow.estimatedArrivalTime).toLocaleString()}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Actual arrival time
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {tripShow.currentStatus === "Đã hoàn thành" ? new Date(tripShow.actualArrivalTime).toLocaleString() : "-"}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Driver name
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {drivers.find(driver => driver.id === tripShow.driverID)?.name}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Vehicle
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {tripShow.vehicle}
+                                            </dd>
+                                        </div>
+                                        
+                                    </dl>
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+
+            )}
     </div>
   );
 }

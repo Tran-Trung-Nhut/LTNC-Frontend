@@ -3,9 +3,8 @@ import axios from "axios";
 import "./css/Driver.css"
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
-import { PencilIcon,ArrowLeftIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
+import { PencilIcon,ArrowLeftIcon,ArrowRightIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
-import { ConstructionOutlined } from "@mui/icons-material";
 
 const defaultFormDriver = {
     id: undefined,
@@ -35,7 +34,9 @@ class Driver extends React.Component {
             defaultDriver: defaultFormDriver,
             showUserInfor: false,
             driverForHis: "",
-            error: ""
+            error: "",
+            currentPage: 1,
+            driversPerPage: 10,
         };
     }
 
@@ -98,6 +99,36 @@ class Driver extends React.Component {
     checkDriverStatus = (driverID) => {
         const ongoingTrips = this.state.trips.filter(trip => trip.driverID === driverID && trip.currentStatus === "Chưa hoàn thành");
         return ongoingTrips.length > 0 ? "ON TRIP" : "AVAILABLE";
+    }
+
+    showSumTrip = (driverID)=>{
+        console.log(driverID);
+        const Sum = this.state.trips.filter(trip => trip.driverID === driverID && trip.currentStatus === "Đã hoàn thành");
+        return Sum.length;
+    }
+
+    showLateTrip = (driverID) => {
+        const Sum = this.state.trips.filter(trip => trip.driverID === driverID && trip.currentStatus === "Đã hoàn thành")
+        
+        const lateTrips = Sum.filter(trip => {
+            const estimatedtime = new Date(trip.estimatedArrivalTime);
+            const actualtime = new Date(trip.actualArrivalTime);
+            return actualtime > estimatedtime
+        })
+
+        return lateTrips.length;
+    }
+
+    showType = (driverID) =>{
+        if(this.showLateTrip/this.showSumTrip > 80){
+            return "Excellent";
+        }else if(this.showLateTrip/this.showSumTrip > 60){
+            return "Good";
+        }else if(this.showLateTrip/this.showSumTrip > 50){
+            return "Fair";
+        }else{
+            return "Poor";
+        }
     }
 
     cancelAddDriver = () => {
@@ -278,6 +309,10 @@ class Driver extends React.Component {
         const { DataisLoaded } = this.state;
         const { isLoggedIn, userRole, password } = this.context
         
+        const totalPages = Math.ceil(this.state.drivers.length / this.state.driversPerPage);
+        const indexOfLastDriver = this.state.currentPage * this.state.driversPerPage;
+        const indexOfFirstDriver = indexOfLastDriver - this.state.driversPerPage;
+        const currentDrivers = this.state.drivers.slice(indexOfFirstDriver, indexOfLastDriver);
         if (!DataisLoaded)
             return (
                 <div>
@@ -288,7 +323,7 @@ class Driver extends React.Component {
         return (
             <div>
             {isLoggedIn && (
-            <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
+            <div className="wrapper" style={{backgroundImage: `url(${Background})`}}>
              <div>
                 <div className="container">
                     <div className="flex items-center mb-4">
@@ -314,6 +349,7 @@ class Driver extends React.Component {
                         </button>
                     </div>
                     </div>
+                    {totalPages >= 1 && (
                     <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
                     <table className="w-full mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
@@ -321,15 +357,17 @@ class Driver extends React.Component {
                             <th scope="col" className="px-6 py-3 text-center">No.</th>
                             <th scope="col" className="px-6 py-3 text-center">Name</th>
                             <th scope="col" className="px-6 py-3 text-center">ID number</th>
+                            <th scope="col" className="px-6 py-3 text-center">Type</th>
                             <th scope="col" className="px-6 py-3 text-center">Status</th>  
                             <th scope="col" className="px-6 py-3 text-center"></th>
                             </tr>
                         </thead>
-                        {this.state.drivers.map((driver, index) => (
+                        {currentDrivers.map((driver, index) => (
                             <tr key={driver.id} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
                                 <td className="p-3 pr-0 text-center">{index + 1}</td>
                                 <td className="p-3 pr-0 text-center ">{driver.name}</td>
                                 <td className="p-3 pr-0 text-center">{driver.id_number}</td>
+                                <td className="p-3 pr-0 text-center">{this.showType(driver.id)}</td>
                                 <td className="p-3 pr-0 text-center">{this.checkDriverStatus(driver.id)}</td>
                                 <td className="p-3 pr-0">
                                 {(userRole === "admin") && (
@@ -364,7 +402,15 @@ class Driver extends React.Component {
                             </tr>
                             ))}
                     </table>
+                    <div className="flex justify-center bg-white">
+                        <button onClick={() => {if(this.state.currentPage !== 1){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowLeftIcon className="h-6 w-6"/></button>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                        <button className="border border-black-1000" key={i} onClick={() => this.setState({ currentPage: i + 1 })}>{i + 1}</button>
+                        ))}
+                        <button onClick={() => {if(this.state.currentPage < totalPages){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowRightIcon className="h-6 w-6"/></button>
+                        </div>
                     </div>
+                    )}
                 </div>
                 {this.state.isShowAddingorEdittingTable && (
                     <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -414,6 +460,8 @@ class Driver extends React.Component {
                             <div className="text-center sm:text-left">
                             <div class="flex justify-between">
                             <button class="px-1 py-1 transform hover:scale-110 text-gray-500" onClick={this.CloseHistory}><ArrowLeftIcon className="h-5 w-5"/></button>
+                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">Total completed trips: {this.showSumTrip(this.state.tripsForHis[0].driverID)}</p>
+                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">Late trips: {this.showLateTrip(this.state.tripsForHis[0].driverID)}</p>
                             <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
                             </div>
                             <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -530,7 +578,6 @@ class Driver extends React.Component {
                             </div>
                             </div>
                             </div>
-
             )}
                 </div>
                 </div>)}
