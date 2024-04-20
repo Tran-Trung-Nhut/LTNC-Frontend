@@ -5,7 +5,7 @@ box-sizing: border-box;
 }
 
 .NavbarItems {
-  background-color: #fff;
+  background-color: transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,7 +42,7 @@ box-sizing: border-box;
 
 .nav-menu a {
   text-decoration: none;
-  color: #333; 
+  color: #fff; 
   font-size: 1.2rem; 
   font-weight: 600;
   padding: 10px; 
@@ -51,8 +51,8 @@ box-sizing: border-box;
 }
 
 .nav-menu a:hover {
-color: #fff ;
-background-color: #9933cc;
+color: #333 ;
+background-color: #fff;
 border-radius: 4px;
 transition: all 0.2s ease-in-out;
 }
@@ -70,13 +70,17 @@ button {
   border: none;
   cursor: pointer;
   transition: 0.2s ease-in-out;
+  color: black;
+  background-color: white ;
 }
 
-button:hover {
-  background-color: rgb (280, 75, 80);
-  color: #fff;
+/* button:hover {
+  background-color: #fff;
+  color: #333;
+  font-weight: 1000;
 
-}
+
+} */
 
 
 @media screen and (max-width: 850px) {
@@ -116,7 +120,7 @@ button:hover {
   }
 
   .nav-menu a:hover{
-    background: #333;
+    background: #fff;
     transition: none;
 
   }

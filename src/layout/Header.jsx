@@ -7,7 +7,7 @@ import Vehicle from "../components/Vehicle";
 import Driver from "../components/Driver";
 import Trip from "../components/Trip"; // Import Trip component
 import "./css/Header.css";
-import logo from "../image/logo.png"
+import logo from "../image/fixlogo.png"
 
 
 function Header() {
