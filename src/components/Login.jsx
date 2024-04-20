@@ -8,15 +8,15 @@ import "./css/Login.css"
 function Login(){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useContext(AuthContext);
+    const { login, admin_password } = useContext(AuthContext);
     
     const handleLogin = (e) => {
         e.preventDefault();
         axios.get(`http://localhost:8000/Driver/login?password=${password}`)
             .then(res => {
                 const driver = res.data;
-                if(password === 'admin' && username === 'admin'){
-                    login('admin','admin','admin');
+                if(password === admin_password && username === 'admin'){
+                    login('admin',admin_password,'admin');
                 }else{
                     if(!driver){
                         alert('Invalid username or password');

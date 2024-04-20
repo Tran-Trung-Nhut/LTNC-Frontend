@@ -7,7 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
-  const [driver, setDriver] = useState('');
+  const [driver, setDriver] = useState();
+  const [admin_password,setAdminPassword] = useState('admin')
 
   const login = (role, password,username,driver) => {
     // Logic for login
@@ -23,8 +24,12 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
   };
 
+  const ChangeAdminPass = (string) =>{
+    setAdminPassword(string)
+  }
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn,userRole,userName,password,driver, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn,userRole,userName,password,driver,admin_password, login, logout, setAdminPassword }}>
       {children}
     </AuthContext.Provider>
   );
