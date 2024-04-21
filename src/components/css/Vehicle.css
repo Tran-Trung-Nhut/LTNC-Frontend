@@ -1,13 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-}
-
-.login{
-    text-align: center;
-}
 .wrapper {
-    background-repeat: repeat-y; 
     background-size: cover; 
     background-size: cover;
     background-position: center;

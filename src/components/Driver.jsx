@@ -3,8 +3,9 @@ import axios from "axios";
 import "./css/Driver.css"
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
-import { PencilIcon, TrashIcon, SearchIcon, UserAddIcon, ClockIcon } from '@heroicons/react/outline';
-
+import { PencilIcon,ArrowLeftIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
+import Background from "../image/logo.jpg";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 const defaultFormDriver = {
     id: undefined,
@@ -32,6 +33,7 @@ class Driver extends React.Component {
             isShowAddingorEdittingTable: false,
             isShowingHistory: false,
             defaultDriver: defaultFormDriver,
+            showUserInfor: false,
             driverForHis: "",
             error: ""
         };
@@ -42,7 +44,26 @@ class Driver extends React.Component {
         this.setState({error: message})
     };
 
+    CloseHistory = () =>{
+        this.setState({
+            showUserInfor: true,
+            isShowingHistory: false
+        })
+    }
+
+    isExistIDNumber = (driverID) =>{
+        const foundID = this.state.drivers.find(driver => driver.id_number === driverID)
+        return foundID !== undefined
+    }
+
     static contextType = AuthContext;
+
+    OpenShowUser = (driver) =>{
+        this.setState({
+        showUserInfor:true,
+        defaultDriver: driver
+    })
+    }
 
     componentDidMount() {
         this.fetchDrivers()
@@ -126,8 +147,10 @@ class Driver extends React.Component {
     handleClose = () =>{
         this.setState({
             isShowAddingorEdittingTable: false,
-            isShowingHistory: false
+            isShowingHistory: false,
+            showUserInfor: false
         })
+        this.handleClearForm()
         this.fetchTrips()
         this.showError("")
     }
@@ -140,7 +163,7 @@ class Driver extends React.Component {
 
     handleSubmitCreateForm = () => {
         const name = document.getElementById("Name").value;
-        const id_number = document.getElementById("id_Number").value;
+        const id = document.getElementById("id_Number").value;
         const dob = document.getElementById("DateofBirth").value;
         const gender = document.getElementById("Gender").value;
         const phone_number = document.getElementById("PhoneNumber").value;
@@ -155,7 +178,7 @@ class Driver extends React.Component {
     
         const newDriver = {
             name: name,
-            id_number: id_number,
+            id_number: id,
             dob: dob,
             gender: gender,
             phone_number: phone_number,
@@ -165,14 +188,19 @@ class Driver extends React.Component {
 
         this.setState({defaultDriver:newDriver})
 
-        this.checkAllFieldsFilled();
-
         if (!this.checkAllFieldsFilled()) {
             this.showError("You have to fill in all fields");
             return;
         }else {
-            this.showError("");
+            if(this.isExistIDNumber(this.state.defaultDriver.id_number)){
+                this.showError("ID này đã tồn tại!")
+                return;
+            }else{
+                this.showError("")
+            }
         }
+
+        
     
         axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
             .then((response) => {
@@ -217,6 +245,7 @@ class Driver extends React.Component {
         const filteredTrips = this.state.trips.filter(trip => trip.driverID === driverID);
         this.setState({ 
             isShowingHistory: true,
+            showUserInfor: false,
             tripsForHis: filteredTrips
         });
     }
@@ -259,43 +288,39 @@ class Driver extends React.Component {
         return (
             <div>
             {isLoggedIn && (
+            <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
              <div>
-                <h1 className="Driver" >List of Driver</h1>
                 <div className="container">
                     <div className="flex items-center mb-4">
 
                     {userRole === 'admin' && (
                         <button 
                         type="button" 
-                        className="btn btn-primary mr-4" 
+                        className="btn btn-primary mr-4 mt-24" 
                         onClick={this.toggleAddDriverForm}>
-                            <UserAddIcon className="h-6 w-7 text-blue-200" />
+                            <UserAddIcon className="h-6 w-7 text-blue-200 transform hover:scale-110" />
                         </button>
                     )}
-                    <div className="w-full relative flex-grow">
+                    <div className="w-full relative flex-grow mt-3">
                         <input 
                             type="text" 
                             value={this.state.searchStr} 
                             placeholder="Search by name or ID number..." 
                             onChange={this.handleInput} 
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                            className="block mt-28 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                         />
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <SearchIcon className="h-5 w-5 text-gray-400" />
-                        </div>
+                        <button type="button" className="absolute mt-20 inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-20 transform hover:scale-110">
+                            <SearchIcon className="h-5 w-5 text-gray-400 mt-4 " />
+                        </button>
                     </div>
                     </div>
-                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
+                    <table className="w-full mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
                             <tr>
                             <th scope="col" className="px-6 py-3 text-center">No.</th>
                             <th scope="col" className="px-6 py-3 text-center">Name</th>
                             <th scope="col" className="px-6 py-3 text-center">ID number</th>
-                            <th scope="col" className="px-6 py-3 text-center">Date of Birth</th>  
-                            <th scope="col" className="px-6 py-3 text-center">Gender</th>  
-                            <th scope="col" className="px-6 py-3 text-center">Phone Number</th>  
-                            <th scope="col" className="px-6 py-3 text-center">License</th>  
                             <th scope="col" className="px-6 py-3 text-center">Status</th>  
                             <th scope="col" className="px-6 py-3 text-center"></th>
                             </tr>
@@ -305,13 +330,11 @@ class Driver extends React.Component {
                                 <td className="p-3 pr-0 text-center">{index + 1}</td>
                                 <td className="p-3 pr-0 text-center ">{driver.name}</td>
                                 <td className="p-3 pr-0 text-center">{driver.id_number}</td>
-                                <td className="p-3 pr-0 text-center">{driver.dob}</td>
-                                <td className="p-3 pr-0 text-center">{driver.gender}</td>
-                                <td className="p-3 pr-0 text-center">{driver.phone_number}</td>
-                                <td className="p-3 pr-0 text-center" >{driver.license.grade} - {driver.license.number}</td>
                                 <td className="p-3 pr-0 text-center">{this.checkDriverStatus(driver.id)}</td>
                                 <td className="p-3 pr-0">
-                                <button
+                                {(userRole === "admin") && (
+                                    <>
+                                    <button
                                     type="button"
                                     className="h-5 w-5 text-yellow-400 mr-1"
                                     onClick={() => {
@@ -329,12 +352,13 @@ class Driver extends React.Component {
                                 >
                                     <TrashIcon className="h-5 w-5" />
                                 </button>
+                                </>)}
                                 <button
                                     type="button"
                                     className=""
-                                    onClick={() => this.showDrivingHistory(driver.id)}
+                                    onClick={() => this.OpenShowUser(driver)}
                                     >
-                                    <ClockIcon className="h-5 w-5" />
+                                    <InformationCircleIcon className="h-5 w-5" />
                                 </button>
                                 </td>
                             </tr>
@@ -357,13 +381,13 @@ class Driver extends React.Component {
                                 Add new driver
                               </h3>
                               <div className="mt-2">
-                                <input type="text" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="name" value={this.state.defaultDriver.name} onChange={this.handleChange} />
-                                <input type="text" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="id_number" value={this.state.defaultDriver.id_number} onChange={this.handleChange} />
-                                <input type="date" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="dob" value={this.state.defaultDriver.dob} onChange={this.handleChange} />
-                                <input type="text" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="gender" value={this.state.defaultDriver.gender} onChange={this.handleChange} />
-                                <input type="text" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="phone_number" value={this.state.defaultDriver.phone_number} onChange={this.handleChange} />
-                                <input type="text" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="grade" value={this.state.defaultDriver.license.grade} onChange={this.handleChangeStruct} />
-                                <input type="text" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="number" value={this.state.defaultDriver.license.number} onChange={this.handleChangeStruct} />
+                                <input type="text" id="Name" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="name" value={this.state.defaultDriver.name} onChange={this.handleChange} />
+                                <input type="text" id="id_Number" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="id_number" value={this.state.defaultDriver.id_number} onChange={this.handleChange} />
+                                <input type="date" id="DateofBirth" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="dob" value={this.state.defaultDriver.dob} onChange={this.handleChange} />
+                                <input type="text" id="Gender" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="gender" value={this.state.defaultDriver.gender} onChange={this.handleChange} />
+                                <input type="text" id="PhoneNumber" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="phone_number" value={this.state.defaultDriver.phone_number} onChange={this.handleChange} />
+                                <input type="text" id="LicenseGrade" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="grade" value={this.state.defaultDriver.license.grade} onChange={this.handleChangeStruct} />
+                                <input type="text" id="LicenseNumber" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="number" value={this.state.defaultDriver.license.number} onChange={this.handleChangeStruct} />
                                 {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
                               </div>
                             </div>
@@ -378,35 +402,137 @@ class Driver extends React.Component {
                   </div>
                 )}
                 {this.state.isShowingHistory && (
-                    <div className="popup">
-                        <div className="popup-content">
-                        <table className="table table-hover">
-                                <thead className="thead-light">
+                    <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+                      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                      </div>
+                      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                          <div className="sm:flex sm:items-start">
+                            <div className="text-center sm:text-left">
+                            <div class="flex justify-between">
+                            <button class="px-1 py-1 transform hover:scale-110 text-gray-500" onClick={this.CloseHistory}><ArrowLeftIcon className="h-5 w-5"/></button>
+                            <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
+                            </div>
+                            <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                 <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
-                                        <th scope="col">No.</th>
-                                        <th scope="col">Departure Location</th>
-                                        <th scope="col">Arrival Location</th>
-                                        <th scope="col">Status</th>
-                                        <th scope=""></th>
+                                        <th scope="col" className="px-6 py-3 text-center">No.</th>
+                                        <th scope="col" className="px-6 py-3 text-center">Departure Location</th>
+                                        <th scope="col" className="px-6 py-3 text-center">Arrival Location</th>
+                                        <th scope="col" className="px-6 py-3 text-center">Status</th>
+                                        <th scope="col" className="px-6 py-3 text-center"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {this.state.tripsForHis.map((trip,index) => (
-                                        <tr key={trip.tripID}>
-                                            <td>{index + 1}</td>
-                                            <td>{trip.departureLocation}</td>
-                                            <td>{trip.arrivalLocation}</td>
-                                            <td>{trip.currentStatus}</td>
-                                            <td></td>
+                                        <tr key={trip.tripID} lassName="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
+                                            <td className="p-3 pr-0 text-center">{index + 1}</td>
+                                            <td className="p-3 pr-0 text-center">{trip.departureLocation}</td>
+                                            <td className="p-3 pr-0 text-center">{trip.arrivalLocation}</td>
+                                            <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
+                                            <td className="p-3 pr-0 text-center"></td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            <button type="button" className="" onClick={this.handleClose}>Close</button>
-
                         </div>
                     </div>
+                    </div>
+                    </div>
+                  </div>
+                  </div>
                 )}
+                {this.state.showUserInfor && (
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+                  <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                  </div>
+                  <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                  <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                      <div className="sm:flex sm:items-start">
+                        <div className="mt-0 h-full w-full text-center sm:text-left">
+                            <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg h-full w-full">
+                            <div class="flex justify-end mt-2">
+                                <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
+                            </div>
+                                <div class="px-4 py-5 sm:px-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                        Driver database
+                                    </h3>
+                                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                                        Details and informations about driver.
+                                    </p>
+                                </div>
+                                <div class="border-t border-gray-200">
+                                    <dl>
+                                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Name
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.name}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                ID number
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.id_number}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Gender
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.gender}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Date of birth
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.dob}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                Phone number
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.phone_number}
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
+                                                License
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                                {this.state.defaultDriver.license.grade} - {this.state.defaultDriver.license.number}
+                                            </dd>
+                                        </div>
+                                     
+                                        <button type="button" class="border border-gray-300 bg-gray-200 transform hover:scale-110 mb-2" onClick={() => this.showDrivingHistory(this.state.defaultDriver.id)}>Driving history</button>
+                                        
+                                    </dl>
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+
+            )}
+                </div>
                 </div>)}
                 {!isLoggedIn && (<div className="login"><Login/></div>)}
             </div>

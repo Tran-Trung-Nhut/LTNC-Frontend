@@ -25,3 +25,16 @@
     justify-content: center;
     height: 100vh; 
 }
+
+
+.flex-grow {
+    margin-bottom: 30px; 
+}
+
+.wrapper {
+    background-repeat: repeat-y; 
+    background-size: cover; 
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh; /* Đảm bảo rằng nền sẽ trải đều trên toàn bộ kích thước màn hình */
+  }
