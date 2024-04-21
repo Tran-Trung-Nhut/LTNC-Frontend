@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { createContext, useState } from 'react';
 
 const AuthContext = createContext();
@@ -28,8 +29,11 @@ export const AuthProvider = ({ children }) => {
     setAdminPassword(string)
   }
 
+  const updateDriver = (driver) =>{
+    setDriver(driver);
+  }
   return (
-    <AuthContext.Provider value={{ isLoggedIn,userRole,userName,password,driver,admin_password, login, logout, setAdminPassword }}>
+    <AuthContext.Provider value={{ isLoggedIn,userRole,userName,updateDriver,password,driver,admin_password, login, logout, setAdminPassword }}>
       {children}
     </AuthContext.Provider>
   );
