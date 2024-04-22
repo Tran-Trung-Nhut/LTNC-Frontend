@@ -8,7 +8,7 @@ import Vehicle from "../components/Vehicle";
 import Driver from "../components/Driver";
 import Trip from "../components/Trip"; // Import Trip component
 import "./css/Header.css";
-import logo from "../image/logo.png";
+import logo from "../image/fixlogo.png";
 import AuthContext from "../Global/AuthContext";
 import { UserCircleIcon, XIcon } from "@heroicons/react/outline";
 
@@ -22,14 +22,80 @@ function Header() {
     logout,
     updateDriver,
     setAdminPassword,
+    setOtherPage,
+    login
   } = useContext(AuthContext);
   const [isShow, setIsShow] = useState(false);
   const [isChangeInfo, setChangeInfo] = useState(false);
   const [error, setError] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [drivers, setDrivers] = useState([])
+
+  const isExistIDNumber = (driverID) =>{
+    axios.get("http://localhost:8000/Driver/list")
+    .then((respon) =>{
+        setDrivers(
+            respon.data
+        )
+    })
+    const foundID = drivers.find(driver => driver.id_number === driverID)
+    return foundID !== undefined
+}
+
+const handleSubmitCreateForm = () => {
+    const name = document.getElementById("Name").value;
+    const id = document.getElementById("id_Number").value;
+    const dob = document.getElementById("DateofBirth").value;
+    const gender = document.getElementById("Gender").value;
+    const phone_number = document.getElementById("PhoneNumber").value;
+    const licenseGrade = document.getElementById("LicenseGrade").value;
+    const licenseNumber = document.getElementById("LicenseNumber").value;
+
+    const license = {
+        grade: licenseGrade,
+        number: licenseNumber
+    } 
+
+    const newDriver = {
+        name: name,
+        id_number: id,
+        dob: dob,
+        gender: gender,
+        phone_number: phone_number,
+        license: license,
+    };
+
+
+    if (!checkAllFilled(newDriver)) {
+        setError("You have to fill in all fields");
+        return;
+    }else {
+        if(isExistIDNumber(id)){
+            setError("ID này đã tồn tại!")
+            if(isExistIDNumber(id)){
+              setError("ID này đã tồn tại!")
+              return;
+            }
+            return;
+        }else{
+            setError("")
+        }
+    }
+
+    axios.post("http://localhost:8000/Driver/add", newDriver)
+        .then((response) => {
+            setIsSignUp(false)
+            login('user', id,name,newDriver)
+        })
+    setError("")
+}
 
   const showInformation = () => {
     setIsShow(true);
   };
+
 
   const handleClose = () => {
     setIsShow(false);
@@ -106,35 +172,45 @@ function Header() {
     }));
   };
 
+  const [clicked, setClicked] = useState(false);
+  const handleClick = () => {
+    setClicked(!clicked);
+  }
   return (
     <>
       <nav className="NavbarItems">
         <div className="logo">
-          <img src={logo} />
-          <Link to="Home"></Link>
+          <Link to="/Home" onClick={setOtherPage(true)}>
+            <img src={logo} />
+          </Link>
         </div>
 
         <ul className="nav-menu">
-          <li className="nav-link">
-            <Link to="Home">Home</Link>
+          <li className="nav-link" >
+            <Link to="Home" className="text-black" onClick={() => setOtherPage(true)}>Home</Link>
           </li>
           <li className="nav-link">
-            <Link to="Driver">Driver</Link>
+            <Link to="Driver" className="text-black" onClick={setOtherPage(true)}>Driver</Link>
           </li>
           <li className="nav-link">
-            <Link to="Vehicle">Vehicle</Link>
+            <Link to="Vehicle" className="text-black" onClick={setOtherPage(true)}>Vehicle</Link>
           </li>
           <li className="nav-link">
-            <Link to="Trip">Trip</Link>
+            <Link to="Trip" className="text-black" onClick={setOtherPage(true)}>Trip</Link>
           </li>
-          {!isLoggedIn && <button type="button">Sign up</button>}
+          {!isLoggedIn && <button 
+          type="button" 
+          className="border border-3 border-black text-lg text-black transform hover:scale-110 capitalize"
+          onClick={()=>setIsSignUp(true)}>
+            Sign up
+          </button>}
           {isLoggedIn && (
             <button
               type="button"
-              className="flex items-center border transform hover:scale-110 capitalize"
+              className="flex items-center border border-3 border-black text-black transform hover:scale-110 capitalize"
               onClick={showInformation}
             >
-              <UserCircleIcon className="h-5 w-5 mr-2" />
+              <UserCircleIcon className="h-6 w-6 mr-2" />
               {userName}
             </button>
           )}
@@ -289,6 +365,42 @@ function Header() {
             </div>
           </div>
         </div>
+      )}
+      {isSignUp && !isLoggedIn  && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+              <div className="sm:flex sm:items-start">
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-5xl font-medium leading-6 text-gray-900 mb-5" id="modal-title">
+                     Sign up
+                  </h3>
+                  <div className="mt-2">
+                    <input type="text" id="Name" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="text" id="id_Number" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="date" id="DateofBirth" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+                    <input type="text" id="Gender" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="text" id="PhoneNumber" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="text" id="LicenseGrade" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+                    <input type="text" id="LicenseNumber" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center">
+              <button type="button" className="items-end mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => {handleSubmitCreateForm()} }>Submit</button>
+              <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={()=>{setIsSignUp(false); setError("")}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+     
       )}
       {isChangeInfo && userRole === "user" && (
         <div className="fixed z-10 inset-0 overflow-y-auto">

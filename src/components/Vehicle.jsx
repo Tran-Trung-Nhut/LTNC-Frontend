@@ -10,9 +10,10 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
 } from "@heroicons/react/outline";
-import Background from "../image/logo.jpg";
+import Background from "../image/B.jpg";
 import "./css/Vehicle.css";
 import { Label, Select, TextInput } from "flowbite-react";
+import Footer from "../layout/Footer";
 
 const defaultFormData = {
   id: undefined,
@@ -37,7 +38,7 @@ class Vehicle extends React.Component {
       formData: defaultFormData,
       error: "",
       currentPage: 1,
-      vehiclesPerPage: 10,
+      vehiclesPerPage: 7,
     };
   }
 
@@ -185,22 +186,23 @@ class Vehicle extends React.Component {
     return (
       <>
         {isLoggedIn && (
-          <div className="App">
             <div
-              className="wrapper bg-cover"
+              className="wrapper"
               style={{ backgroundImage: `url(${Background})` }}
             >
-              <div className="container">
-                <div className="">
-                  <button
+              <div className="flex items-center justify-center mt-5">
+              <button
                     type="button"
-                    className="btn btn-primary mt-24"
+                    className="border border-2 border-black justify-center"
                     onClick={this.handleOpenVehicleForm}
                   >
-                    <PlusIcon className="h-6 w-10 text-blue-200 mt-0" />
+                    <PlusIcon className="h-6 w-10 text-black" />
                   </button>
-                </div>
-                <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg   mt-3">
+                  </div>
+              <div className="container">
+                
+               <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg mt-2
+               ">
                   {totalPages >= 1 && (
                     <div className="bg-white">
                       <table
@@ -274,7 +276,7 @@ class Vehicle extends React.Component {
                                   </button>
                                   <button
                                     type="button"
-                                    className="h-5 w-5 mr-2"
+                                    className="h-5 w-5 mr-3"
                                     onClick={() => {
                                       this.handleDelete(vehicle.id);
                                     }}
@@ -287,7 +289,7 @@ class Vehicle extends React.Component {
                           </tr>
                         ))}
                       </table>
-                      <div className="flex justify-center py-3 vehicle-pagination">
+                      <div className="flex justify-center mt-1 mb-1 vehicle-pagination">
                         <button
                           onClick={() => {
                             if (this.state.currentPage !== 1) {
@@ -297,11 +299,11 @@ class Vehicle extends React.Component {
                             }
                           }}
                         >
-                          <ArrowLeftIcon className="h-4 w-4" />
+                          <ArrowLeftIcon className="h-5 w-5 text-black" />
                         </button>
                         {Array.from({ length: totalPages }, (_, i) => (
                           <button
-                            className={`border border-black-1000 mx-1 text-sm ${
+                            className={`border border-2 border-black text-black mx-1 text-sm ${
                               i + 1 === this.state.currentPage && "active-page"
                             } `}
                             key={i}
@@ -321,7 +323,7 @@ class Vehicle extends React.Component {
                             }
                           }}
                         >
-                          <ArrowRightIcon className="h-4 w-4" />
+                          <ArrowRightIcon className="h-5 w-5 text-black" />
                         </button>
                       </div>
                     </div>
@@ -493,10 +495,11 @@ class Vehicle extends React.Component {
                   </div>
                 </div>
               )}
-            </div>
           </div>
+          
         )}
         {!isLoggedIn && <Login></Login>}
+        <Footer/>
       </>
     );
   }

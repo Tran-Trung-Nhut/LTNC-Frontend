@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [userName, setUserName] = useState('');
   const [driver, setDriver] = useState();
   const [admin_password,setAdminPassword] = useState('admin')
+  const [isInOtherPage,setOtherPage] = useState(false)
 
   const login = (role, password,username,driver) => {
     // Logic for login
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     setDriver(driver);
   }
   return (
-    <AuthContext.Provider value={{ isLoggedIn,userRole,userName,updateDriver,password,driver,admin_password, login, logout, setAdminPassword }}>
+    <AuthContext.Provider value={{ isInOtherPage, setOtherPage,isLoggedIn,userRole,userName,updateDriver,password,driver,admin_password, login, logout, setAdminPassword }}>
       {children}
     </AuthContext.Provider>
   );

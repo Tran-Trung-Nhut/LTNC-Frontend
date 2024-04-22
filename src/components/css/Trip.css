@@ -1,7 +1,11 @@
 .wrapper {
-    background-repeat: repeat-y; 
     background-size: cover; 
     background-size: cover;
     background-position: center;
     min-height: 100vh; /* Đảm bảo rằng nền sẽ trải đều trên toàn bộ kích thước màn hình */
+  }
+
+  .active-page {
+    background-color: #7f7c7c;
+    color: white;
   }
