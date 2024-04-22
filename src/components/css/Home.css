@@ -5,7 +5,6 @@
     position: relative;
     background-repeat: repeat;
     z-index: 0;
-    background-repeat: repeat; /* Lặp lại hình nền */
     background-size: cover; /* Đảm bảo hình nền phủ toàn bộ phần tử */
     height: 100vh; /* Đảm bảo kích thước cao của nền bằng chiều cao của viewport */
     position: relative;
