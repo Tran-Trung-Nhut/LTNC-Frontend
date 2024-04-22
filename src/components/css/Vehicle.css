@@ -1,6 +1,18 @@
 .wrapper {
-    background-size: cover; 
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh; /* Đảm bảo rằng nền sẽ trải đều trên toàn bộ kích thước màn hình */
+  background-size: cover;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; /* Đảm bảo rằng nền sẽ trải đều trên toàn bộ kích thước màn hình */
+}
+
+.vehicle-pagination {
+  button:hover {
+    background-color: #e8e8e8;
+    color: black;
   }
+
+  .active-page {
+    background-color: #171717;
+    color: white;
+  }
+}

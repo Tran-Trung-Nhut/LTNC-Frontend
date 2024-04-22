@@ -3,7 +3,7 @@ import axios from "axios";
 import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { PencilIcon, TrashIcon, CheckCircleIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon, MapIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon, CheckCircleIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon, TruckIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
 import Background from "../image/logo.jpg";
 
 
@@ -231,9 +231,9 @@ const Trip = () => {
               
                <button 
                 type="button" 
-                className="btn btn-primary mr-4 mt-24" 
+                className="btn btn-primary mr-4 mt-24 w-16" 
                 onClick={() => setIsAddingTrip(true)}>
-                    <MapIcon className="h-6 w-7 text-blue-200" />
+                    <TruckIcon className="h-6 w-7 text-blue-200" />
                 </button>
             )}
             <div className="w-full relative flex-grow mt-20">
