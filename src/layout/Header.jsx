@@ -308,8 +308,8 @@ function Header() {
                                   className="text-gray-600 ml-5">
                                   Type new password</div>
                                 <input type="text" id="newPassword" placeholder="New password" className="form-input w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                                {error && <p style={{ color: 'red' }}>{error}</p>}
                               </div>
+                              {error && <p style={{ color: 'red' }}>{error}</p>}
                             </div>
                           </div>
                         </div>
