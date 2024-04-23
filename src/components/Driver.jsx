@@ -321,7 +321,7 @@ class Driver extends React.Component {
             );
  
         return (
-            <div>
+            <div class="driver-page-container">
             {isLoggedIn && (
             <div className="wrapper" style={{backgroundImage: `url(${Background})`}}>
              <div>
