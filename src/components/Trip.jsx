@@ -19,7 +19,7 @@ const Trip = () => {
     arrivalLocation: "",
     currentStatus: "Chưa hoàn thành",
     driverID: "",
-    vehicle: "" // Thêm trường vehicle cho loại xe
+    registeredNumber: "" // Thêm trường vehicle cho loại xe
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingTrip, setIsAddingTrip] = useState(false);
@@ -164,7 +164,7 @@ const Trip = () => {
           arrivalLocation: "",
           currentStatus: "Chưa hoàn thành",
           driverID: "",
-          vehicle: "" // Reset trường vehicle sau khi thêm chuyến đi thành công
+          registeredNumber: "" // Reset trường vehicle sau khi thêm chuyến đi thành công
         });
         setIsAddingTrip(false);
       })
@@ -290,7 +290,7 @@ const Trip = () => {
                 <td className="p-3 pr-0 text-center">{trip.departureLocation}</td>
                 <td className="p-3 pr-0 text-center">{trip.arrivalLocation}</td>
                 <td className="p-3 pr-0 text-center">{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
-                <td className="p-3 pr-0 text-center">{trip.vehicle}</td>
+                <td className="p-3 pr-0 text-center">{trip.registeredNumber}</td>
                 <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
                 <td className="p-3 pr-0 text-center">
                   <div className="flex ">
@@ -366,11 +366,10 @@ const Trip = () => {
                   <option key={location} value={location}>{location}</option>
                 ))}
               </select>
-              {/* Thêm phần chọn loại xe */}
-              <select name="vehicle" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.vehicle} onChange={handleInputChange}>
-                <option value="">Select Vehicle Type</option>
+              <select name="registeredNumber" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" value={newTrip.registeredNumber} onChange={handleInputChange}>
+                <option value="">Select Vehicle</option>
                 {vehicles.map(vehicle => (
-                  <option key={vehicle.type} value={vehicle.type}>{vehicle.type}</option>
+                  <option key={vehicle.registeredNumber} value={vehicle.registeredNumber}>{vehicle.registeredNumber}</option>
                 ))}
               </select>
               {/* Removed the Estimated Arrival Time input field */}
