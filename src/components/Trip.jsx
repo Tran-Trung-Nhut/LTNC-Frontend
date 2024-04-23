@@ -3,8 +3,9 @@ import axios from "axios";
 import "./css/Trip.css";
 import AuthContext from "../Global/AuthContext";
 import Login from "./Login";
-import { PencilIcon, TrashIcon, CheckCircleIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon, MapIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
-import Background from "../image/logo.jpg";
+import { PencilIcon, TrashIcon, CheckCircleIcon, SearchIcon,ArrowLeftIcon,ArrowRightIcon, TruckIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
+import Background from "../image/B.jpg";
+import Footer from "../layout/Footer";
 
 
 const Trip = () => {
@@ -47,7 +48,7 @@ const Trip = () => {
   ]);
   const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
   const [currentPage, setCurrentPage] = useState(1);
-  const [tripsPerPage, setTripPerPage] = useState(10);
+  const [tripsPerPage, setTripPerPage] = useState(7);
   const [showTripInfo, setShowTrip] = useState(false)
   const [tripShow, setTripShow] = useState()
 
@@ -219,39 +220,39 @@ const Trip = () => {
     return <div>Loading...</div>;
   }
   if(!isLoggedIn){
-    return(<Login></Login>)
+    return(<div><Login></Login>
+    <Footer/></div>)
   }else{
 
   return (
     <div>
         <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
         <div className="container">
-            <div className="flex items-center mb-4">
+            <div className="flex mt-5 h-12 w-96">
             {userRole === 'admin' &&(
-              
                <button 
                 type="button" 
-                className="btn btn-primary mr-4 mt-24" 
+                className="border border-black border-2 flex h-10 mr-2 items-center" 
                 onClick={() => setIsAddingTrip(true)}>
-                    <MapIcon className="h-6 w-7 text-blue-200" />
+                    <TruckIcon className="h-7 w-8 text-black" />
                 </button>
             )}
-            <div className="w-full relative flex-grow mt-20">
+            <div className="w-full relative flex-grow">
                 <input 
                     type="text" 
                     placeholder="Search..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mt-5 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                    className=" block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none" >
-                    <SearchIcon className="h-5 w-5 text-gray-400 mt-5" />
+                    <SearchIcon className="h-5 w-5 text-gray-400 mt-4" />
                 </div>
             </div>
             </div>
         <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg bg-white">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <thead className="bg-[#030637] text-white">
             <tr>
               <th scope="col" className="px-6 py-3 text-center">No.</th>
               <th scope="col" className="px-6 py-3 text-center">Departure Location</th>
@@ -291,15 +292,17 @@ const Trip = () => {
                 <td className="p-3 pr-0 text-center">{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
                 <td className="p-3 pr-0 text-center">{trip.vehicle}</td>
                 <td className="p-3 pr-0 text-center">{trip.currentStatus}</td>
-                <td>
-                  <button className="h-5 w-5 text-yellow-400 mr-1" onClick={() => handleEdit(trip)}><PencilIcon className="h-5 w-5"/></button>
+                <td className="p-3 pr-0 text-center">
+                  <div className="flex ">
+                  <button className="h-3 w-3 text-yellow-400 p-3" onClick={() => handleEdit(trip)}><PencilIcon className="h-5 w-5"/></button>
                 {userRole === "admin" && (  
-                  <button className="h-5 w-5 text-red-400 mr-1" onClick={() => handleDelete(trip.tripID)}><TrashIcon className="h-5 w-5"/></button>
+                  <button className="h-3 w-3 text-red-400 p-3" onClick={() => handleDelete(trip.tripID)}><TrashIcon className="h-5 w-5"/></button>
                 )} 
-                <button className="h-5 w-5 text-gray-400 mr-1" ><InformationCircleIcon className="h-5 w-5" onClick={()=>showInfo(trip.tripID)}/></button>
+                <button className="h-5 w-5 text-gray-400 p-3" ><InformationCircleIcon className="h-5 w-5" onClick={()=>showInfo(trip.tripID)}/></button>
                   {trip.currentStatus !== "Đã hoàn thành" && (
-                    <button className="h-5 w-5 text-grey-400 mr-1" onClick={() => markCompleted(trip.tripID)}><CheckCircleIcon className="h-5 w-5"/></button>
+                    <button className="h-5 w-5 text-grey-400 p-3" onClick={() => markCompleted(trip.tripID)}><CheckCircleIcon className="h-5 w-5"/></button>
                   )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -310,16 +313,20 @@ const Trip = () => {
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <ArrowLeftIcon className="h-5 w-5"/>
+            <ArrowLeftIcon className="h-5 w-5 text-black"/>
           </button>
           {Array.from({ length: totalPages }, (_, i) => (
-              <button className="border border-black-1000" key={i} onClick={() => setCurrentPage( i + 1 )}>{i + 1}</button>
+              <button className={`border border-2 border-black text-black mx-1 text-sm ${
+                i + 1 === currentPage && "active-page"
+              } `}
+              key={i} 
+              onClick={() => setCurrentPage( i + 1 )}>{i + 1}</button>
             ))}
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={indexOfLastTrip >= trips.length}
           >
-            <ArrowRightIcon className="h-5 w-5"/>
+            <ArrowRightIcon className="h-5 w-5 text-black"/>
           </button>
       </div>
         </div>
@@ -481,7 +488,9 @@ const Trip = () => {
                             </div>
 
             )}
+      <Footer/>
     </div>
+    
   );
 }
 }

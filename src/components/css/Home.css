@@ -1,16 +1,206 @@
 .background img{
-    width: 100%;
-    height: auto;
+    width: 105%;
+    height: 100%;
     z-index: -1;
     position: relative;
+    z-index: 0;
+    background-size: cover; /* Đảm bảo hình nền phủ toàn bộ phần tử */
+    height: 100vh; /* Đảm bảo kích thước cao của nền bằng chiều cao của viewport */
+    position: relative;
+    
 }
 
-.Text {
-    position: absolute;
-    z-index: 1;
-    top: 50%; 
-    left: 100px ;
-    color: white; 
-    font-size: 100px; 
-    font-weight: 800; 
+.background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 115%;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu nền phủ với độ trong suốt */
+  z-index: 1; /* Đảm bảo lớp phủ phía trên */
 }
+
+.text-box {
+  position: absolute;
+  z-index: 1;
+    top: 50%; /* Đặt vị trí top ở 50% của viewport */
+    left: 50%; /* Đặt vị trí left ở 50% của viewport */
+    transform: translate(-50%, -50%); /* Đưa văn bản vào giữa cả chiều ngang và chiều dọc */
+    max-width: 80%; /* Giới hạn chiều rộng tối đa của text box */
+    padding: 20px; /* Khoảng cách giữa văn bản và mép của hộp */
+    
+    text-align: center; /* Căn giữa nội dung của text box */
+    box-sizing: border-box; /* Include padding trong chiều rộng */
+    overflow: auto; /* Cho phép văn bản tự xuống dòng nếu không đủ không gian */
+}
+
+.text {
+    font-size: 5vw; /* Kích thước của văn bản theo chiều ngang của viewport */
+    font-weight: 800;
+    color: white;
+    text-align: center;
+}
+
+.text .description {
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 2;
+    color: white;
+}
+
+\.container {
+    position: fix;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px auto;
+    max-width: 800px;
+    z-index: 2;
+  }
+  
+  .box {
+    width: 250px;
+    margin: 20px;
+    padding: 20px;
+    margin-bottom: 50px;
+    background-color: transparent;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .box img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .box h1 {
+    font-size: 20px;
+    margin-top: 10px;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .box p.description {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #666;
+  }
+  
+  @media only screen and (max-width: 600px) {
+    .container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .box {
+      width: calc(100% - 40px);
+      margin: 10px 20px;
+    }
+  }
+  .container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%; /* Điều chỉnh nếu cần */
+    margin: 0 auto; /* Canh giữa container */
+  }
+  .box {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-right: 20px; /* Điều chỉnh khoảng cách giữa các hộp */
+    box-sizing: border-box;
+  }
+
+
+ /* Container chứa các hộp, sắp xếp theo chiều ngang */
+ .container {
+    display: flex; /* Sử dụng Flexbox để xếp các box ngang nhau */
+    justify-content: space-around; /* Canh giữa các box theo chiều ngang và để khoảng cách đều nhau */
+    flex-wrap: wrap; /* Cho phép các box chuyển dòng khi không đủ chỗ */
+}
+
+.box {
+    flex: 1; /* Chia tỉ lệ chiều rộng của mỗi box để chúng có kích thước bằng nhau */
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px; /* Khoảng cách giữa các box */
+    text-align: center;
+    box-sizing: border-box;
+    max-width: 250px; /* Đảm bảo rằng mỗi box không quá rộng */
+}
+
+.box img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.box h1 {
+    font-size: 20px;
+    margin-top: 10px;
+    color: #333;
+    font-weight: 600;
+}
+
+.box p.description {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #666;
+}
+
+.box {
+    width: calc(33.33% - 20px);
+    margin-bottom: 140px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.icon i {
+    color: #333;
+}
+
+h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.description {
+    font-size: 16px;
+    color: #666;
+}
+
+.text2 {
+  font-size: 5vw; /* Kích thước của văn bản theo chiều ngang của viewport */
+  font-weight: 800;
+  color: black;
+  text-align: center;
+  font-size: 5vw; /* Kích thước của văn bản theo chiều ngang của viewport */
+  font-weight: 800;
+  color: black;
+  text-align: center;
+  padding: 170px 250px 50px; /* Khoảng cách trên (150px), trái (250px), dưới (50px) */
+  margin-bottom: 20px; /* Giảm khoảng cách dưới */
+}
+
+.box:hover {
+  background-color: rgba(0, 0, 0, .7);
+}
+
+.box:hover h1,
+.box:hover p.description {
+  color: white;
+}
+
+

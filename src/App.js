@@ -2,30 +2,35 @@ import React, { Component } from "react";
 import "./App.css";
 import Header from "./layout/Header";
 import { AuthProvider } from "./Global/AuthContext";
-import { Footer } from "flowbite-react";
+import AuthContext from "./Global/AuthContext";
+import Background from "./image/B.jpg";
+import Footer from "./layout/Footer";
+import Login from "./components/Login";
+import Home from "./components/Home";
 
 class App extends Component {
-  render() {
-    return (
-      <AuthProvider>
-        <div className="App">
-          <Header />
-          <div>
-            <h1 className="Text">Driver Care</h1>
+  static contextType = AuthContext;
+    render() {
+        const { isInOtherPage } = this.context || {}
+        return (
+        <AuthProvider>
+            <div className="App">
+                <Header/>
+                {/* {!isInOtherPage && (
+                <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
+                 <div>   
+                    <div>
+                        <h1 className="Text">
+                            Driver Care
+                        </h1>
+                    </div>
+                </div>
+                </div>)} */}
           </div>
-          <Footer id="app-footer" container>
-            <Footer.Copyright href="#" by="Driver Care" year={2024} />
-            <Footer.LinkGroup>
-              <Footer.Link href="#">About</Footer.Link>
-              <Footer.Link href="#">Privacy Policy</Footer.Link>
-              <Footer.Link href="#">Licensing</Footer.Link>
-              <Footer.Link href="#">Contact</Footer.Link>
-            </Footer.LinkGroup>
-          </Footer>
-        </div>
-      </AuthProvider>
-    );
-  }
+
+        </AuthProvider>
+        );
+            }
 }
 
 export default App;

@@ -4,7 +4,8 @@ import "./css/Driver.css"
 import Login from "./Login";
 import AuthContext from "../Global/AuthContext";
 import { PencilIcon,ArrowLeftIcon,ArrowRightIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
-import Background from "../image/logo.jpg";
+import Background from "../image/B.jpg";
+import Footer from "../layout/Footer";
 
 const defaultFormDriver = {
     id: undefined,
@@ -36,7 +37,7 @@ class Driver extends React.Component {
             driverForHis: "",
             error: "",
             currentPage: 1,
-            driversPerPage: 10,
+            driversPerPage: 7,
         };
     }
 
@@ -102,7 +103,6 @@ class Driver extends React.Component {
     }
 
     showSumTrip = (driverID)=>{
-        console.log(driverID);
         const Sum = this.state.trips.filter(trip => trip.driverID === driverID && trip.currentStatus === "Đã hoàn thành");
         return Sum.length;
     }
@@ -120,11 +120,11 @@ class Driver extends React.Component {
     }
 
     showType = (driverID) =>{
-        if(this.showLateTrip/this.showSumTrip > 80){
+        if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.8){
             return "Excellent";
-        }else if(this.showLateTrip/this.showSumTrip > 60){
+        }else if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.6){
             return "Good";
-        }else if(this.showLateTrip/this.showSumTrip > 50){
+        }else if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.5){
             return "Fair";
         }else{
             return "Poor";
@@ -231,8 +231,6 @@ class Driver extends React.Component {
             }
         }
 
-        
-    
         axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
             .then((response) => {
                 this.fetchDrivers();
@@ -326,33 +324,33 @@ class Driver extends React.Component {
             <div className="wrapper" style={{backgroundImage: `url(${Background})`}}>
              <div>
                 <div className="container">
-                    <div className="flex items-center mb-4">
-
-                    {userRole === 'admin' && (
-                        <button 
-                        type="button" 
-                        className="btn btn-primary mr-4 mt-24" 
-                        onClick={this.toggleAddDriverForm}>
-                            <UserAddIcon className="h-6 w-7 text-blue-200 transform hover:scale-110" />
-                        </button>
-                    )}
-                    <div className="w-full relative flex-grow mt-3">
+                    <div className="flex mt-5 h-12 w-96">
+                        {userRole === 'admin' && (
+                            <button 
+                            type="button" 
+                            className="border border-black border-2 flex h-10 mr-2 items-center" 
+                            onClick={this.toggleAddDriverForm}>
+                                <UserAddIcon className=" h-7 w-8 text-black transform hover:scale-110" />
+                            </button>
+                        )}
+                    
+                    <div className="w-full relative flex-grow">
                         <input 
                             type="text" 
                             value={this.state.searchStr} 
                             placeholder="Search by name or ID number..." 
                             onChange={this.handleInput} 
-                            className="block mt-28 w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                         />
-                        <button type="button" className="absolute mt-20 inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-20 transform hover:scale-110">
-                            <SearchIcon className="h-5 w-5 text-gray-400 mt-4 " />
+                        <button type="button" className="absolute mt-3 inset-y-0 right-0 flex items-center pr-3 pointer-events-none transform hover:scale-110">
+                            <SearchIcon className="h-5 w-5 text-gray-400" />
                         </button>
                     </div>
-                    </div>
+                </div>
                     {totalPages >= 1 && (
                     <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
                     <table className="w-full mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+                        <thead className="bg-[#030637] text-white">
                             <tr>
                             <th scope="col" className="px-6 py-3 text-center">No.</th>
                             <th scope="col" className="px-6 py-3 text-center">Name</th>
@@ -403,11 +401,25 @@ class Driver extends React.Component {
                             ))}
                     </table>
                     <div className="flex justify-center bg-white">
-                        <button onClick={() => {if(this.state.currentPage !== 1){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowLeftIcon className="h-6 w-6"/></button>
+                        <button 
+                        onClick={() => {if(this.state.currentPage !== 1){this.setState({ currentPage: this.state.currentPage - 1 })}}}>
+                            <ArrowLeftIcon 
+                            className="h-6 w-6"/>
+                        </button>
                         {Array.from({ length: totalPages }, (_, i) => (
-                        <button className="border border-black-1000" key={i} onClick={() => this.setState({ currentPage: i + 1 })}>{i + 1}</button>
+                        <button 
+                        className={`border border-2 border-black text-black mx-1 text-sm ${
+                            i + 1 === this.state.currentPage && "active-page"
+                          } `}
+                        key={i} 
+                        onClick={() => this.setState({ currentPage: i + 1 })}>
+                            {i + 1}
+                        </button>
                         ))}
-                        <button onClick={() => {if(this.state.currentPage < totalPages){this.setState({ currentPage: this.state.currentPage + 1 })}}}><ArrowRightIcon className="h-6 w-6"/></button>
+                        <button 
+                        onClick={() => {if(this.state.currentPage < totalPages){this.setState({ currentPage: this.state.currentPage + 1 })}}}>
+                            <ArrowRightIcon className="h-6 w-6"/>
+                        </button>
                         </div>
                     </div>
                     )}
@@ -439,8 +451,8 @@ class Driver extends React.Component {
                             </div>
                           </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                          <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.defaultDriver.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
+                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center">
+                          <button type="button" className="w-full mt-3 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.defaultDriver.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
                           <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={this.handleClose}>Cancel</button>
                         </div>
                       </div>
@@ -581,8 +593,10 @@ class Driver extends React.Component {
             )}
                 </div>
                 </div>)}
-                {!isLoggedIn && (<div className="login"><Login/></div>)}
-            </div>
+                {!isLoggedIn && (<Login/>)}
+                <Footer/>
+            </div> 
+            
         );
     }
 }

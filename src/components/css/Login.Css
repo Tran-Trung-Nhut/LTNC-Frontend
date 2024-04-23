@@ -4,10 +4,9 @@
 }
 
 .login{
-    text-align: center;
+    z-index: 4;
 }
 .wrapper {
-    background-repeat: repeat-y; 
     background-size: cover; 
     background-size: cover;
     background-position: center;
