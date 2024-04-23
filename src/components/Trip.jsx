@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./css/Trip.css";
 
+
 const Trip = () => {
   const [trips, setTrips] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -12,7 +13,7 @@ const Trip = () => {
     arrivalLocation: "",
     currentStatus: "Chưa hoàn thành",
     driverID: "",
-    vehicle: "" // Thêm trường vehicle cho loại xe
+    registeredNumber: "" // Thêm trường registeredNumber để lưu biển số xe
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingTrip, setIsAddingTrip] = useState(false);
@@ -138,7 +139,7 @@ const Trip = () => {
           arrivalLocation: "",
           currentStatus: "Chưa hoàn thành",
           driverID: "",
-          vehicle: "" // Reset trường vehicle sau khi thêm chuyến đi thành công
+          registeredNumber: "" // Reset trường registeredNumber sau khi thêm chuyến đi thành công
         });
         setIsAddingTrip(false);
       })
@@ -217,7 +218,7 @@ const Trip = () => {
               <th>Estimated Arrival Time</th>
               <th>Actual Arrival Time</th>
               <th>Driver Name</th>
-              <th>Vehicle</th>
+              <th>Registered Number</th>
               <th>Current Status</th>
               <th>Action</th>
             </tr>
@@ -252,7 +253,7 @@ const Trip = () => {
                 <td>{new Date(trip.estimatedArrivalTime).toLocaleString()}</td>
                 <td>{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
                 <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
-                <td>{trip.vehicle}</td>
+                <td>{trip.registeredNumber}</td>
                 <td>{trip.currentStatus}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
@@ -288,11 +289,11 @@ const Trip = () => {
                 <option key={location} value={location}>{location}</option>
               ))}
             </select>
-            {/* Thêm phần chọn loại xe */}
-            <select name="vehicle" value={newTrip.vehicle} onChange={handleInputChange}>
-              <option value="">Select Vehicle Type</option>
+            {/* Thêm phần chọn biển số xe */}
+            <select name="registeredNumber" value={newTrip.registeredNumber} onChange={handleInputChange}>
+              <option value="">Select Registered Number</option>
               {vehicles.map(vehicle => (
-                <option key={vehicle.type} value={vehicle.type}>{vehicle.type}</option>
+                <option key={vehicle.registeredNumber} value={vehicle.registeredNumber}>{vehicle.registeredNumber}</option>
               ))}
             </select>
             {/* Removed the Estimated Arrival Time input field */}

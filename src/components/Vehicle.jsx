@@ -187,7 +187,8 @@ class Vehicle extends React.Component {
                 <td>{index + 1}</td>
                 <td>{vehicle.registeredNumber}</td>
                 <td>{vehicle.type}</td>
-                <td>{vehicle.size.width} x {vehicle.size.height} x {vehicle.size.height}</td>
+                <td>{vehicle.size.width} x {vehicle.size.length} x {vehicle.size.height}</td>
+
                 <td>{vehicle.capacity}</td>
                 <td>{vehicle.status}</td>
 
