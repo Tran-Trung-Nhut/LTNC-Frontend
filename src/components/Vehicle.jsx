@@ -230,7 +230,7 @@ class Vehicle extends React.Component {
                   {totalPages >= 1 && (
                     <div className="bg-white">
                       <table
-                        className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        className="w_vehicle text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
                         align="center"
                       >
                         <thead className="bg-[#030637] text-white">

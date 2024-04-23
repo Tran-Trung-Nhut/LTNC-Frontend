@@ -84,6 +84,22 @@ const Trip = () => {
       });
   }
 
+  const calculatePrice = (departureLocation, arrivalLocation) => {
+    const priceMap = {
+      "Thành phố Hồ Chí Minh": { "Nam": 30000000, "Trung": 20000000, "Bắc": 3000000 },
+      "Đà Nẵng": { "Nam": 20000000, "Trung": 3000000, "Bắc": 20000000 },
+      "Hà Nội": { "Nam": 30000000, "Trung": 20000000, "Bắc": 3000000 }
+    };
+    const departureRegion = regions.find(region => region.provinces.includes(departureLocation));
+    const arrivalRegion = regions.find(region => region.provinces.includes(arrivalLocation));
+    if (departureRegion && arrivalRegion) {
+      const price = priceMap[departureLocation][arrivalRegion.name];
+      return price.toLocaleString();
+    } else {
+      return "N/A";
+    }
+  };
+
   const showInfo = (tripID) =>{
     setShowTrip(true);
     setTripShow(trips.find(trip => trip.tripID === tripID));
@@ -286,7 +302,9 @@ const Trip = () => {
               );
             }).map((trip, index) => (
               <tr key={trip.tripID} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
-                <td className="p-3 pr-0 text-center">{index + 1}</td>
+                <td className="p-3 pr-0 text-center">{index + 1 +
+                                (currentPage - 1) *
+                                  tripsPerPage}</td>
                 <td className="p-3 pr-0 text-center">{trip.departureLocation}</td>
                 <td className="p-3 pr-0 text-center">{trip.arrivalLocation}</td>
                 <td className="p-3 pr-0 text-center">{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
@@ -461,6 +479,14 @@ const Trip = () => {
                                         </div>
                                         <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                             <dt class="text-sm font-medium text-gray-500">
+                                                Price
+                                            </dt>
+                                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {calculatePrice(tripShow.departureLocation, tripShow.arrivalLocation)}đ
+                                            </dd>
+                                        </div>
+                                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt class="text-sm font-medium text-gray-500">
                                                 Driver name
                                             </dt>
                                             <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -472,7 +498,7 @@ const Trip = () => {
                                                 Vehicle
                                             </dt>
                                             <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                            {tripShow.vehicle}
+                                            {tripShow.registeredNumber}
                                             </dd>
                                         </div>
                                         

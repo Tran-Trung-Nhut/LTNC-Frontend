@@ -3,8 +3,9 @@ import { useState} from "react";
 import axios from "axios";
 import AuthContext from "../Global/AuthContext";
 import logo from "../image/fixlogo.png";
+import oldlogo from "../image/logo.png";
 import Background from "../image/B.jpg";
-import { render } from "@testing-library/react";
+import { Label } from "flowbite-react";
 
 function Login(){
     const [username, setUsername] = useState('');
@@ -109,7 +110,7 @@ function Login(){
             <div className="w-full rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <a href="#" className="flex justify-center items-center mb-6 text-4xl font-semibold text-gray-900 dark:text-white">
-                    <img className="w-14 h-14 mr-2" src= {logo} alt="logo"/>
+                    <img className="w-14 h-14 mr-2" src= {oldlogo} alt="logo"/>
                     Driver Care  
                 </a>
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -138,7 +139,6 @@ function Login(){
                             required=""/>
                         </div>
                         <div className="flex items-center justify-between">
-                            <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
                         </div>
                         <button 
                         type="submit" 
@@ -163,32 +163,41 @@ function Login(){
           </div>
           <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
           <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+            <div className="bg-white px-4 pt-1 pb-0 sm:p-6 sm:pb-4 tailwind-class-name">
               <div className="sm:flex sm:items-start">
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="mt-1 w-full text-center sm:mt-0 sm:text-left">
+                  <a href="#" className="flex justify-center items-center mb-4 text-4xl font-semibold text-gray-900 dark:text-white">
+                      <img className="w-14 h-14 mr-2" src= {oldlogo} alt="logo"/>
+                      Driver Care  
+                  </a>
                   <h3 className="text-5xl font-medium leading-6 text-gray-900 mb-5" id="modal-title">
                      Sign up
                   </h3>
-                  <div className="mt-2">
-                    <input type="text" id="Name" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    <input type="text" id="id_Number" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    <input type="date" id="DateofBirth" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-                    <input type="text" id="Gender" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    <input type="text" id="PhoneNumber" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-                    <input type="text" id="LicenseGrade" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-                    <input type="text" id="LicenseNumber" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                  <div className=""/>
+                    <Label value="Driver's name" className="mb-2 text-start block font-semibold"/>
+                      <input type="text" id="Name" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
+                    <Label value="Driver's ID number" className="mb-2 text-start block font-semibold"/>
+                      <input type="text" id="id_Number" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
+                    <Label value="Driver's birthday" className="mb-2 text-start block font-semibold"/>  
+                      <input type="date" id="DateofBirth" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
+                    <Label value="Driver's gender" className="mb-2 text-start block font-semibold"/>  
+                      <input type="text" id="Gender" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black" />
+                    <Label value="Driver's phone number" className="mb-2 text-start block font-semibold"/>  
+                      <input type="text" id="PhoneNumber" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
+                    <Label value="Driver's license grade" className="mb-2 text-start block font-semibold"/>
+                      <input type="text" id="LicenseGrade" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
+                    <Label value="Driver's license number" className="mb-2 text-start block font-semibold "/>  
+                      <input type="text" id="LicenseNumber" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md border-black"/>
                   </div>
                 </div>
               </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center">
+                <button type="button" className="border border-2 border-black transform hover:scale-110 ml-1" onClick={() => {handleSubmitCreateForm()} }>Submit</button>
+                <button type="button" className="border border-2 border-black transform hover:scale-110 ml-1" onClick={()=>setIsSignUp(false)}>Cancel</button>
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center">
-              <button type="button" className="w-full mt-3 items-end inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => {handleSubmitCreateForm()} }>Submit</button>
-              <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={()=>setIsSignUp(false)}>Cancel</button>
             </div>
           </div>
         </div>
-      </div>
       )}
       </div>
     )

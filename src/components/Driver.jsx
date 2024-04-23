@@ -306,7 +306,7 @@ class Driver extends React.Component {
     
                 </div>
                     {totalPages >= 1 && (
-                    <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
+                    <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg w-100">
                     <table className="w-full mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead className="bg-[#030637] text-white">
                             <tr>
@@ -320,7 +320,9 @@ class Driver extends React.Component {
                         </thead>
                         {currentDrivers.map((driver, index) => (
                             <tr key={driver.id} className="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
-                                <td className="p-3 pr-0 text-center">{index + 1}</td>
+                                <td className="p-3 pr-0 text-center">{index + 1 +
+                                (this.state.currentPage - 1) *
+                                  this.state.driversPerPage}</td>
                                 <td className="p-3 pr-0 text-center ">{driver.name}</td>
                                 <td className="p-3 pr-0 text-center">{driver.id_number}</td>
                                 <td className="p-3 pr-0 text-center">{this.showType(driver.id)}</td>
