@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./css/Trip.css";
 
-
 const Trip = () => {
   const [trips, setTrips] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -13,7 +12,7 @@ const Trip = () => {
     arrivalLocation: "",
     currentStatus: "Chưa hoàn thành",
     driverID: "",
-    registeredNumber: "" // Thêm trường registeredNumber để lưu biển số xe
+    registeredNumber: ""
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingTrip, setIsAddingTrip] = useState(false);
@@ -37,15 +36,15 @@ const Trip = () => {
       "An Giang", "Bà Rịa Vũng Tàu", "Bạc Liêu", "Bến Tre", "Bình Dương",
       "Bình Phước", "Cà Mau", "Cần Thơ", "Đồng Nai", "Đồng Tháp",
       "Hậu Giang", "Kiên Giang", "Long An", "Phú Yên", "Sóc Trăng",
-      "TP Hồ Chí Minh", "Trà Vinh", "Vĩnh Long", "Tiền Giang"
+      "Thành phố Hồ Chí Minh", "Trà Vinh", "Vĩnh Long", "Tiền Giang"
     ] }
   ]);
-  const [vehicles, setVehicles] = useState([]); // Danh sách các loại xe
+  const [vehicles, setVehicles] = useState([]);
 
   useEffect(() => {
     fetchTrips();
     fetchDrivers();
-    fetchVehicles(); // Gọi hàm fetch danh sách các loại xe
+    fetchVehicles();
   }, []);
 
   useEffect(() => {
@@ -91,6 +90,24 @@ const Trip = () => {
       });
   }
 
+  const calculatePrice = (departureLocation, arrivalLocation) => {
+    const priceMap = {
+      "Thành phố Hồ Chí Minh": { "Nam": 30000000, "Trung": 20000000, "Bắc": 3000000 },
+      "Đà Nẵng": { "Nam": 20000000, "Trung": 3000000, "Bắc": 20000000 },
+      "Hà Nội": { "Nam": 30000000, "Trung": 20000000, "Bắc": 3000000 }
+    };
+
+    const departureRegion = regions.find(region => region.provinces.includes(departureLocation));
+    const arrivalRegion = regions.find(region => region.provinces.includes(arrivalLocation));
+
+    if (departureRegion && arrivalRegion) {
+      const price = priceMap[departureLocation][arrivalRegion.name];
+      return price.toLocaleString();
+    } else {
+      return "N/A";
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTrip(prevState => ({
@@ -108,16 +125,13 @@ const Trip = () => {
   }
 
   const handleSubmit = () => {
-    // Kiểm tra xem có phải đang chỉnh sửa chuyến đi hay không
     const isEditing = !!newTrip.tripID;
 
-    // Nếu không phải đang chỉnh sửa và tài xế đã tồn tại chuyến đi chưa hoàn thành
     if (!isEditing && trips.some(trip => trip.driverID === newTrip.driverID && trip.currentStatus === "Chưa hoàn thành")) {
       alert("Tài xế đang bận, hãy chọn tài xế khác!");
       return;
     }
 
-    // Tiếp tục thêm chuyến đi mới hoặc cập nhật chuyến đi đã lưu
     const estimatedArrivalTime = new Date(newTrip.departureTime);
     estimatedArrivalTime.setDate(estimatedArrivalTime.getDate() + 1.5);
     estimatedArrivalTime.setHours(Math.round(estimatedArrivalTime.getHours()));
@@ -139,7 +153,7 @@ const Trip = () => {
           arrivalLocation: "",
           currentStatus: "Chưa hoàn thành",
           driverID: "",
-          registeredNumber: "" // Reset trường registeredNumber sau khi thêm chuyến đi thành công
+          registeredNumber: ""
         });
         setIsAddingTrip(false);
       })
@@ -219,6 +233,7 @@ const Trip = () => {
               <th>Actual Arrival Time</th>
               <th>Driver Name</th>
               <th>Registered Number</th>
+              <th>Price</th>
               <th>Current Status</th>
               <th>Action</th>
             </tr>
@@ -254,6 +269,7 @@ const Trip = () => {
                 <td>{trip.currentStatus === "Đã hoàn thành" ? new Date(trip.actualArrivalTime).toLocaleString() : "-"}</td>
                 <td>{drivers.find(driver => driver.id === trip.driverID)?.name}</td>
                 <td>{trip.registeredNumber}</td>
+                <td>{calculatePrice(trip.departureLocation, trip.arrivalLocation)}</td>
                 <td>{trip.currentStatus}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(trip)}>Edit</button>
@@ -289,14 +305,12 @@ const Trip = () => {
                 <option key={location} value={location}>{location}</option>
               ))}
             </select>
-            {/* Thêm phần chọn biển số xe */}
             <select name="registeredNumber" value={newTrip.registeredNumber} onChange={handleInputChange}>
               <option value="">Select Registered Number</option>
               {vehicles.map(vehicle => (
                 <option key={vehicle.registeredNumber} value={vehicle.registeredNumber}>{vehicle.registeredNumber}</option>
               ))}
             </select>
-            {/* Removed the Estimated Arrival Time input field */}
             <input type="hidden" name="estimatedArrivalTime" value={newTrip.estimatedArrivalTime} />
             <select name="driverID" value={newTrip.driverID} onChange={handleInputChange}>
               <option value="">Select Driver</option>
