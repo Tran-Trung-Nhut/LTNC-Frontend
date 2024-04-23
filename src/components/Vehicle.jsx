@@ -5,10 +5,10 @@ import Login from "./Login";
 import {
   PencilIcon,
   TrashIcon,
-  TruckIcon,
   PlusIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  SearchIcon
 } from "@heroicons/react/outline";
 import Background from "../image/B.jpg";
 import "./css/Vehicle.css";
@@ -171,6 +171,20 @@ class Vehicle extends React.Component {
     return registeredNumber !== "" && capacity !== "" && size !== "";
   };
 
+  handleSearchChange = (e) => {
+    const searchValue = e.currentTarget.value;
+    axios
+      .get(`http://localhost:8000/Vehicle/find`, {
+        params: { search: searchValue },
+      })
+      .then((response) => {
+        console.log({ response });
+        if (response.status === 200) {
+          this.setState({ vehicles: response.data || [] });
+        }
+      });
+  };
+
   render() {
     const { isLoggedIn, userRole, password } = this.context;
 
@@ -190,7 +204,19 @@ class Vehicle extends React.Component {
               className="wrapper"
               style={{ backgroundImage: `url(${Background})` }}
             >
-              <div className="flex items-center justify-center mt-5">
+              <div className="container">
+              <div className="flex items-center justify-center mt-5 wofsearch">
+              <div className="w-full relative items-center mr-2">
+                        <input 
+                            type="text" 
+                            placeholder="Search by vehicle number, type and status..." 
+                            onChange={this.handleSearchChange} 
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                        />
+                        <button type="button" className="absolute mt-1 inset-y-0 right-0 flex items-center pr-3 pointer-events-none transform hover:scale-110">
+                            <SearchIcon className="h-5 w-5 text-gray-400" />
+                        </button>
+                    </div>
               <button
                     type="button"
                     className="border border-2 border-black justify-center"
@@ -199,8 +225,6 @@ class Vehicle extends React.Component {
                     <PlusIcon className="h-6 w-10 text-black" />
                   </button>
                   </div>
-              <div className="container">
-                
                <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg mt-2
                ">
                   {totalPages >= 1 && (

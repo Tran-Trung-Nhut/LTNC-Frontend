@@ -229,15 +229,7 @@ const Trip = () => {
         <div className="wrapper bg-cover bg-repeat-y" style={{backgroundImage: `url(${Background})`}}>
         <div className="container">
             <div className="flex mt-5 h-12 w-96">
-            {userRole === 'admin' &&(
-               <button 
-                type="button" 
-                className="border border-black border-2 flex h-10 mr-2 items-center" 
-                onClick={() => setIsAddingTrip(true)}>
-                    <TruckIcon className="h-7 w-8 text-black" />
-                </button>
-            )}
-            <div className="w-full relative flex-grow">
+            <div className="w-full relative flex-grow mr-2">
                 <input 
                     type="text" 
                     placeholder="Search..." 
@@ -249,6 +241,14 @@ const Trip = () => {
                     <SearchIcon className="h-5 w-5 text-gray-400 mt-4" />
                 </div>
             </div>
+            {userRole === 'admin' &&(
+               <button 
+                type="button" 
+                className="h-11 border border-black border-2 flex h-10 mr-2 items-center" 
+                onClick={() => setIsAddingTrip(true)}>
+                    <TruckIcon className="h-8 w-8 text-black" />
+                </button>
+            )}
             </div>
         <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg bg-white">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

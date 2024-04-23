@@ -195,10 +195,7 @@ class Driver extends React.Component {
     };
 
     handleSubmitCreateForm = () => {
-        if(!this.checkAllFieldsFilled()){
-            this.showError("You have to fill all fields and your ID number have to be unique")
-            return;
-        }else{
+        
             axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
             .then((response) => {
                 this.fetchDrivers();
@@ -206,25 +203,20 @@ class Driver extends React.Component {
                 this.showError("")
                 this.handleClearForm()
             })
-        }
     }
 
     handleSubmitUpdateForm = () => {
-        if(!this.checkAllFieldsFilled()){
-            this.showError("You have to fill all fields and your ID number have to be unique")
-            return;
-        }else{
-            axios
-            .put("http://localhost:8000/Driver/update", this.state.defaultDriver)
-            .then((response) => {
-                if (response.status === 200) {
-                this.setState({ isShowAddingorEdittingTable: false });
-                this.fetchDrivers();
-                this.handleClearForm();
-                this.showError("");
-                }
-            });
-        }
+          axios
+          .put("http://localhost:8000/Driver/update", this.state.defaultDriver)
+          .then((response) => {
+              if (response.status === 200) {
+              this.setState({ isShowAddingorEdittingTable: false });
+              this.fetchDrivers();
+              this.handleClearForm();
+              this.showError("");
+              }
+          });
+        
     };
 
 
@@ -289,17 +281,9 @@ class Driver extends React.Component {
             <div className="wrapper" style={{backgroundImage: `url(${Background})`}}>
              <div>
                 <div className="container">
+        
                     <div className="flex mt-5 h-12 w-96">
-                        {userRole === 'admin' && (
-                            <button 
-                            type="button" 
-                            className="border border-black border-2 flex h-10 mr-2 items-center" 
-                            onClick={this.toggleAddDriverForm}>
-                                <UserAddIcon className=" h-7 w-8 text-black transform hover:scale-110" />
-                            </button>
-                        )}
-                    
-                    <div className="w-full relative flex-grow">
+                    <div className="w-full relative flex-grow mr-2">
                         <input 
                             type="text" 
                             value={this.state.searchStr} 
@@ -311,6 +295,15 @@ class Driver extends React.Component {
                             <SearchIcon className="h-5 w-5 text-gray-400" />
                         </button>
                     </div>
+                        {userRole === 'admin' && (
+                            <button 
+                            type="button" 
+                            className="border border-black border-2 flex h-11 mr-2 items-center" 
+                            onClick={this.toggleAddDriverForm}>
+                                <UserAddIcon className=" h-8 w-8 text-black transform hover:scale-110" />
+                            </button>
+                        )}
+    
                 </div>
                     {totalPages >= 1 && (
                     <div className="relative z-2 overflow-x-auto shadow-md sm:rounded-lg">
@@ -422,16 +415,18 @@ class Driver extends React.Component {
                                     value={this.state.defaultDriver.name}
                                     onChange={this.handleChange}
                                   >
-                                    
                                   </TextInput>
+                                  {!this.state.defaultDriver.name && <p className="text-red-500">You have to fill this field</p>}
                                 </div>
                                 <div className="mb-3">
                                   <Label
+                                    required
                                     htmlFor="ID_number"
                                     value="Driver's ID number"
                                     className="mb-2 text-start block font-semibold"
                                   />
                                   <TextInput
+                                    required
                                     type="string"
                                     placeholder="Enter driver's ID number"
                                     value={this.state.defaultDriver.id_number}
@@ -464,6 +459,7 @@ class Driver extends React.Component {
                                     className="mb-2 text-start block font-semibold"
                                   />
                                   <TextInput
+                                    required
                                     type="date"
                                     placeholder="Enter driver's birthday"
                                     value={this.state.defaultDriver.dob}
@@ -478,6 +474,7 @@ class Driver extends React.Component {
                                     className="mb-2 text-start block font-semibold"
                                   />
                                   <TextInput
+                                    required
                                     type="string"
                                     placeholder="Enter driver's phone number"
                                     value={this.state.defaultDriver.phone_number}
@@ -514,6 +511,7 @@ class Driver extends React.Component {
                                     className="mb-2 text-start block font-semibold"
                                   />
                                   <TextInput
+                                    required
                                     type="string"
                                     placeholder="Enter driver's license number"
                                     value={this.state.defaultDriver.license.number}
@@ -536,7 +534,7 @@ class Driver extends React.Component {
                             className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:text-sm w-24"
                             onClick={() => {
                               if (this.state.defaultDriver.id_number) {
-                                this.handleSubmitUpdateForm();
+                                this.handleSubmitUpdateForm()
                               } else {
                                 this.handleSubmitCreateForm();
                               }
