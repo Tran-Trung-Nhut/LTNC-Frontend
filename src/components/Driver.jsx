@@ -6,6 +6,7 @@ import AuthContext from "../Global/AuthContext";
 import { PencilIcon,ArrowLeftIcon,ArrowRightIcon, TrashIcon, SearchIcon, UserAddIcon, InformationCircleIcon, XIcon } from '@heroicons/react/outline';
 import Background from "../image/B.jpg";
 import Footer from "../layout/Footer";
+import { TextInput, Select, Label } from "flowbite-react";
 
 const defaultFormDriver = {
     id: undefined,
@@ -17,7 +18,6 @@ const defaultFormDriver = {
       grade: "",
       number: "",
     },
-    availability: "Free",
   };
 class Driver extends React.Component {
 
@@ -53,8 +53,8 @@ class Driver extends React.Component {
         })
     }
 
-    isExistIDNumber = (driverID) =>{
-        const foundID = this.state.drivers.find(driver => driver.id_number === driverID)
+    isExistIDNumber = () =>{
+        const foundID = this.state.drivers.find(driver => driver.id_number === this.state.defaultDriver.id_number)
         return foundID !== undefined
     }
 
@@ -146,33 +146,35 @@ class Driver extends React.Component {
     }
 
     checkAllFieldsFilled = () => {
-        const { name, id_number, dob, gender, phone_number, license } = this.state.defaultDriver;
-        return (name !== "" && id_number !== "" && dob !== "" && gender !== "" && phone_number !== "" && license.grade !== "" && license.number !== "");
+        const { name, id_number, dob, phone_number, license } = this.state.defaultDriver;
+        if (this.isExistIDNumber()) {
+            return false;
+        }
+        return (name !== "" && id_number !== "" && dob !== "" && phone_number !== "" && license.number !== "")
     };
 
     handleChange = (event) => {
         const { name, value } = event.target;
 
-        this.setState(prevState => ({
+        this.setState({
             defaultDriver: {
-                ...prevState.defaultDriver,
-                [name]: value,
+              ...this.state.defaultDriver,
+              [name]: value,
             },
-        }));
+          });
     };
     
     handleChangeStruct = (event) => {
         const { name, value } = event.target;
-        this.checkAllFieldsFilled();
-            this.setState(prevState => ({
+        this.setState({
             defaultDriver: {
-                ...prevState.defaultDriver,
-                license: {
-                    ...prevState.defaultDriver.license,
-                    [name]: value,
-                },
+              ...this.state.defaultDriver,
+              license: {
+                ...this.state.defaultDriver.license,
+                [name]: value,
+              },
             },
-        }));
+          });
     };
 
     handleClose = () =>{
@@ -193,73 +195,36 @@ class Driver extends React.Component {
     };
 
     handleSubmitCreateForm = () => {
-        const name = document.getElementById("Name").value;
-        const id = document.getElementById("id_Number").value;
-        const dob = document.getElementById("DateofBirth").value;
-        const gender = document.getElementById("Gender").value;
-        const phone_number = document.getElementById("PhoneNumber").value;
-        const licenseGrade = document.getElementById("LicenseGrade").value;
-        const licenseNumber = document.getElementById("LicenseNumber").value;
-        const availability = "Free";
-
-        const license = {
-            grade: licenseGrade,
-            number: licenseNumber
-        } 
-    
-        const newDriver = {
-            name: name,
-            id_number: id,
-            dob: dob,
-            gender: gender,
-            phone_number: phone_number,
-            license: license,
-            availability: availability
-        };
-
-        this.setState({defaultDriver:newDriver})
-
-        if (!this.checkAllFieldsFilled()) {
-            this.showError("You have to fill in all fields");
+        if(!this.checkAllFieldsFilled()){
+            this.showError("You have to fill all fields and your ID number have to be unique")
             return;
-        }else {
-            if(this.isExistIDNumber(this.state.defaultDriver.id_number)){
-                this.showError("ID này đã tồn tại!")
-                return;
-            }else{
-                this.showError("")
-            }
-        }
-
-        axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
+        }else{
+            axios.post("http://localhost:8000/Driver/add", this.state.defaultDriver)
             .then((response) => {
                 this.fetchDrivers();
                 this.setState({ isShowAddingorEdittingTable: false })
+                this.showError("")
+                this.handleClearForm()
             })
-            .catch((error) => {
-                console.error("Error adding driver:", error);
-                alert("Failed to add driver. Please try again later.");
-            });
-        this.showError("")
-        this.handleClearForm()
+        }
     }
 
     handleSubmitUpdateForm = () => {
-        if (!this.checkAllFieldsFilled()) {
-            this.showError("You have to fill in all fields");
+        if(!this.checkAllFieldsFilled()){
+            this.showError("You have to fill all fields and your ID number have to be unique")
             return;
-        } else {
-            this.showError("");
+        }else{
+            axios
+            .put("http://localhost:8000/Driver/update", this.state.defaultDriver)
+            .then((response) => {
+                if (response.status === 200) {
+                this.setState({ isShowAddingorEdittingTable: false });
+                this.fetchDrivers();
+                this.handleClearForm();
+                this.showError("");
+                }
+            });
         }
-        axios
-          .put("http://localhost:8000/Driver/update", this.state.defaultDriver)
-          .then((response) => {
-            if (response.status === 200) {
-              this.setState({ isShowAddingorEdittingTable: false });
-              this.fetchDrivers();
-              this.handleClearForm();
-            }
-          });
     };
 
 
@@ -427,33 +392,165 @@ class Driver extends React.Component {
                 {this.state.isShowAddingorEdittingTable && (
                     <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
-                      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                      <div
+                        className="fixed inset-0 transition-opacity"
+                        aria-hidden="true"
+                      >
                         <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
                       </div>
-                      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                      <span
+                        className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                        aria-hidden="true"
+                      >
+                        &#8203;
+                      </span>
                       <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                        <div className="bg-white px-4 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
                           <div className="sm:flex sm:items-start">
-                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                              <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-title">
-                                Add new driver
-                              </h3>
+                            <div className="text-center w-full">
                               <div className="mt-2">
-                                <input type="text" id="Name" placeholder="Name" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="name" value={this.state.defaultDriver.name} onChange={this.handleChange} />
-                                <input type="text" id="id_Number" placeholder="ID Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="id_number" value={this.state.defaultDriver.id_number} onChange={this.handleChange} />
-                                <input type="date" id="DateofBirth" placeholder="Date of Birth" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="dob" value={this.state.defaultDriver.dob} onChange={this.handleChange} />
-                                <input type="text" id="Gender" placeholder="Gender" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="gender" value={this.state.defaultDriver.gender} onChange={this.handleChange} />
-                                <input type="text" id="PhoneNumber" placeholder="Phone Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="phone_number" value={this.state.defaultDriver.phone_number} onChange={this.handleChange} />
-                                <input type="text" id="LicenseGrade" placeholder="License Grade" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="grade" value={this.state.defaultDriver.license.grade} onChange={this.handleChangeStruct} />
-                                <input type="text" id="LicenseNumber" placeholder="License Number" className="form-input mb-4 w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" name="number" value={this.state.defaultDriver.license.number} onChange={this.handleChangeStruct} />
-                                {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="name"
+                                    value="Driver's name"
+                                    className="mb-2 text-start block font-semibold"
+                                  />
+                                  <TextInput
+                                    required
+                                    placeholder="Enter driver's name"
+                                    name="name"
+                                    value={this.state.defaultDriver.name}
+                                    onChange={this.handleChange}
+                                  >
+                                    
+                                  </TextInput>
+                                </div>
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="ID_number"
+                                    value="Driver's ID number"
+                                    className="mb-2 text-start block font-semibold"
+                                  />
+                                  <TextInput
+                                    type="string"
+                                    placeholder="Enter driver's ID number"
+                                    value={this.state.defaultDriver.id_number}
+                                    name="id_number"
+                                    onChange={this.handleChange}
+                                  />
+                                </div>
+                                <div className="w-100">
+                                  <div className="mb-2 block">
+                                    <Label
+                                      htmlFor="gender"
+                                      value="Select driver's gender"
+                                      className="mb-2 text-start block font-semibold"
+                                    />
+                                  </div>
+                                  <Select
+                                    name="gender"
+                                    required
+                                    value={this.state.defaultDriver.gender}
+                                    onChange={this.handleChange}
+                                  >
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                  </Select>
+                                </div>
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="dob"
+                                    value="Date of Birth"
+                                    className="mb-2 text-start block font-semibold"
+                                  />
+                                  <TextInput
+                                    type="date"
+                                    placeholder="Enter driver's birthday"
+                                    value={this.state.defaultDriver.dob}
+                                    name="dob"
+                                    onChange={this.handleChange}
+                                  />
+                                </div>
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="phone_number"
+                                    value="Phone number"
+                                    className="mb-2 text-start block font-semibold"
+                                  />
+                                  <TextInput
+                                    type="string"
+                                    placeholder="Enter driver's phone number"
+                                    value={this.state.defaultDriver.phone_number}
+                                    name="phone_number"
+                                    onChange={this.handleChange}
+                                  />
+                                </div>
+                                <div className="w-100">
+                                  <div className="mb-2 block">
+                                    <Label
+                                      htmlFor="liceseGrade"
+                                      value="Select license grade"
+                                      className="mb-2 text-start block font-semibold"
+                                    />
+                                  </div>
+                                  <Select
+                                    name="grade"
+                                    required
+                                    value={this.state.defaultDriver.license.grade}
+                                    onChange={this.handleChangeStruct}
+                                  >
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C1">C1</option>
+                                    <option value="C2">C2</option>
+                                    <option value="F">F</option>
+                                    <option value="FE">FE</option>
+                                  </Select>
+                                </div>
+                                <div className=" mb-3">
+                                  <Label
+                                    htmlFor="licenseNumber"
+                                    value="License number"
+                                    className="mb-2 text-start block font-semibold"
+                                  />
+                                  <TextInput
+                                    type="string"
+                                    placeholder="Enter driver's license number"
+                                    value={this.state.defaultDriver.license.number}
+                                    name="number"
+                                    onChange={this.handleChangeStruct}
+                                  />
+                                </div>
+                                {this.state.error && (
+                                  <p style={{ color: "red" }}>
+                                    {this.state.error}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-center">
-                          <button type="button" className="w-full mt-3 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" onClick={() => { if (this.state.defaultDriver.id) { this.handleSubmitUpdateForm(); } else { this.handleSubmitCreateForm(); } }}>Save</button>
-                          <button type="button" className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onClick={this.handleClose}>Cancel</button>
+                        <div className="mt-1 px-4 pb-4 pt-2 sm:px-6 sm:flex sm:flex-row-reverse">
+                          <button
+                            type="button"
+                            className="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:text-sm w-24"
+                            onClick={() => {
+                              if (this.state.defaultDriver.id_number) {
+                                this.handleSubmitUpdateForm();
+                              } else {
+                                this.handleSubmitCreateForm();
+                              }
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:text-sm w-24"
+                            onClick={this.handleClose}
+                          >
+                            Cancel
+                          </button>
                         </div>
                       </div>
                     </div>
