@@ -120,11 +120,11 @@ class Driver extends React.Component {
     }
 
     showType = (driverID) =>{
-        if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.8){
+        if(this.showLateTrip(driverID)/this.showSumTrip(driverID) <= 0.2){
             return "Excellent";
-        }else if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.6){
+        }else if(this.showLateTrip(driverID)/this.showSumTrip(driverID) <= 0.4){
             return "Good";
-        }else if(1 - this.showLateTrip(driverID)/this.showSumTrip(driverID) >= 0.5){
+        }else if(this.showLateTrip(driverID)/this.showSumTrip(driverID) <= 0.6){
             return "Fair";
         }else{
             return "Poor";
@@ -569,8 +569,12 @@ class Driver extends React.Component {
                             <div className="text-center sm:text-left">
                             <div class="flex justify-between">
                             <button class="px-1 py-1 transform hover:scale-110 text-gray-500" onClick={this.CloseHistory}><ArrowLeftIcon className="h-5 w-5"/></button>
-                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">Total completed trips: {this.showSumTrip(this.state.tripsForHis[0].driverID)}</p>
-                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">Late trips: {this.showLateTrip(this.state.tripsForHis[0].driverID)}</p>
+                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">
+                              Total completed trips: {this.showSumTrip(this.state.tripsForHis.length > 0?this.state.tripsForHis[0].driverID : "null")}
+                              </p>
+                            <p className="text-lg font-semibold mb-2 border rounded-lg border-gray-500">
+                              Late trips: {this.showLateTrip(this.state.tripsForHis.length > 0?this.state.tripsForHis[0].driverID : "null")}
+                              </p>
                             <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
                             </div>
                             <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
