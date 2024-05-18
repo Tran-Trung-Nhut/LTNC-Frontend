@@ -312,12 +312,15 @@ const handleSubmitCreateForm = () => {
             >
               &#8203;
             </span>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+            <div className="inline-block align-bottom rounded-lg text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-0 h-full w-full text-center sm:text-left">
                     <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg h-full w-full">
                       <div class="flex justify-end mt-2">
+                        <p class="mt-1 max-w-2xl text-sm text-black mr-36 mb-1">
+                            ADMIN ACCOUNT
+                        </p>
                         <button
                           class="px-1 py-1 transform hover:scale-110 text-red-500"
                           onClick={() => handleClose()}
@@ -345,19 +348,19 @@ const handleSubmitCreateForm = () => {
                           </div>
                         </dl>
                       </div>
-                    </div>
-                    <button
-                      class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      <button
+                      class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 mb-1 rounded focus:outline-none focus:shadow-outline"
                       onClick={() => Logout()}
-                    >
-                      Log out
-                    </button>
-                    <button
-                      class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-3"
-                      onClick={() => showChange()}
-                    >
-                      Change password
-                    </button>
+                      >
+                        Log out
+                      </button>
+                      <button
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mb-1 rounded focus:outline-none focus:shadow-outline ml-3"
+                        onClick={() => showChange()}
+                      >
+                        Change password
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -564,7 +564,7 @@ class Driver extends React.Component {
                       </div>
                       <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                       <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
+                        <div className="bg-white px-4 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
                           <div className="sm:flex sm:items-start">
                             <div className="text-center sm:text-left">
                             <div class="flex justify-between">
@@ -578,8 +578,8 @@ class Driver extends React.Component {
                             <button class="px-1 py-1 transform hover:scale-110 text-red-500" onClick={this.handleClose}><XIcon className="h-5 w-5"/></button>
                             </div>
                             <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                 <thead className="text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
+                                 <thead className="text-black uppercase bg-gray-400 border border-black">
+                                    <tr className="text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
                                         <th scope="col" className="px-6 py-3 text-center">No.</th>
                                         <th scope="col" className="px-6 py-3 text-center">Departure Location</th>
                                         <th scope="col" className="px-6 py-3 text-center">Arrival Location</th>
@@ -587,7 +587,7 @@ class Driver extends React.Component {
                                         <th scope="col" className="px-6 py-3 text-center"></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="border border-black">
                                     {this.state.tripsForHis.map((trip,index) => (
                                         <tr key={trip.tripID} lassName="bg-white text-black-800 border-b dark:bg-gray-800 dark:border-black-1000">
                                             <td className="p-3 pr-0 text-center">{index + 1}</td>
