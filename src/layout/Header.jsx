@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import Home from "../components/Home";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Vehicle from "../components/Vehicle";
 import Driver from "../components/Driver";
 import Trip from "../components/Trip"; // Import Trip component
@@ -31,6 +31,12 @@ function Header() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [drivers, setDrivers] = useState([])
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    navigate("/Home");
+  }, [])
 
   const isExistIDNumber = (driverID) =>{
     axios.get("http://localhost:8000/Driver/list")
@@ -318,7 +324,7 @@ const handleSubmitCreateForm = () => {
                   <div className="mt-0 h-full w-full text-center sm:text-left">
                     <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg h-full w-full">
                       <div class="flex justify-end mt-2">
-                        <p class="mt-1 max-w-2xl text-sm text-black mr-36 mb-1">
+                        <p class="mt-1 text-lg font-medium text-sm text-black mr-36 mb-1">
                             ADMIN ACCOUNT
                         </p>
                         <button
@@ -502,7 +508,7 @@ const handleSubmitCreateForm = () => {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="inline-flex mt-3 justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:text-sm w-24"
                   onClick={() => handleUpdateForm(driver)}
                 >
                   Save
@@ -536,14 +542,14 @@ const handleSubmitCreateForm = () => {
             </span>
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 tailwind-class-name">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4">
                     <h3
-                      className="text-lg font-medium leading-6 text-gray-900"
+                      className="text-center text-lg font-medium leading-6 text-gray-900"
                       id="modal-title"
                     >
                       Change Admin's password
                     </h3>
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4">
                     <div className="mt-2 flex">
                       <div className="text-gray-600 ml-5">
                         Type new password
@@ -562,7 +568,7 @@ const handleSubmitCreateForm = () => {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="inline-flex mt-3 justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:text-sm w-24"
                   onClick={() => {
                     if (document.getElementById("newPassword").value) {
                       setAdminpassword(

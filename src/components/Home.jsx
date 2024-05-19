@@ -31,7 +31,7 @@ function Home() {
                 <img src={Background} alt="background"/>
         <div class="container">
             <div className="text2">  
-                What we can do?
+                What can we do?
             </div>
             <div class="box">
             <div className="icon">
