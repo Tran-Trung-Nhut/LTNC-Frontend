@@ -38,7 +38,7 @@ class Vehicle extends React.Component {
       formData: defaultFormData,
       error: "",
       currentPage: 1,
-      vehiclesPerPage: 7,
+      vehiclesPerPage: 10,
     };
   }
 
